@@ -11,12 +11,16 @@ import { AppLayout } from "~/lib/app/AppLayout";
 import { AppProviders } from "~/lib/app/AppProviders";
 import { pageTitle } from "~/lib/meta/title";
 import { themeScript } from "~/lib/theme/theme";
+import { Button, LinkButton } from "~/lib/ui/button";
 import type { Route } from "./+types/root";
 
 import "~/styles/index.css";
 
-// Routes without their own meta, and the SPA build's index.html, use this.
-export const meta: Route.MetaFunction = () => [{ title: pageTitle() }];
+// Routes without their own meta, the SPA build's index.html, and error pages use
+// this.
+export const meta: Route.MetaFunction = ({ error }) => [
+	{ title: pageTitle(error ? "Error" : undefined) },
+];
 
 export function HydrateFallback() {
 	return (
@@ -82,29 +86,39 @@ export default function RootRoute() {
  * https://reactrouter.com/how-to/error-boundary#error-boundaries
  */
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-	let message = "Error";
-	let details = "An unexpected error occurred.";
+	let title = "Something went wrong";
+	let details = "An unexpected error stopped this page. Reload to try again.";
 	let stack: string | undefined;
 
 	if (isRouteErrorResponse(error)) {
-		message = error.status === 404 ? "404" : "Error";
+		title = error.status === 404 ? "Page not found" : `Error ${error.status}`;
 		details =
 			error.status === 404
-				? "The requested page could not be found."
+				? "Nothing lives at this address."
 				: error.statusText || details;
-	} else if (import.meta.env.DEV && error && error instanceof Error) {
+	} else if (import.meta.env.DEV && error instanceof Error) {
 		details = error.message;
 		stack = error.stack;
 	}
 
 	console.error(error);
 
+	// Rendered without the app shell, in case the shell is what failed.
 	return (
-		<main>
-			<h1>{message}</h1>
-			<p>{details}</p>
+		<main className="mx-auto w-full max-w-3xl space-y-6 px-4 py-16 sm:px-6">
+			<div className="space-y-2">
+				<p className="text-sm font-medium text-muted-foreground">Error</p>
+				<h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+				<p className="text-muted-foreground">{details}</p>
+			</div>
+			<div className="flex flex-wrap gap-2">
+				<Button onPress={() => window.location.reload()}>Reload</Button>
+				<LinkButton href="/" variant="outline">
+					Go to the overview
+				</LinkButton>
+			</div>
 			{stack && (
-				<pre>
+				<pre className="overflow-x-auto rounded-lg border bg-muted p-4 text-xs">
 					<code>{stack}</code>
 				</pre>
 			)}

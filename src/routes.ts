@@ -1,4 +1,4 @@
-import { index, type RouteConfig } from "@react-router/dev/routes";
+import { index, type RouteConfig, route } from "@react-router/dev/routes";
 import { exampleRoutes } from "./routes/examples/routes";
 
 /**
@@ -16,4 +16,5 @@ import { exampleRoutes } from "./routes/examples/routes";
 export default [
 	index("./routes/home/home.route.tsx"),
 	...exampleRoutes,
+	route("*", "./routes/not-found/not-found.route.tsx"),
 ] satisfies RouteConfig;
