@@ -3,7 +3,7 @@ import type { UserEvent } from "@testing-library/user-event";
 import { beforeEach, expect, it, vi } from "vitest";
 import { renderRoute } from "../../../../test-utils/render-route";
 import { submitProjectRequest } from "./demo-server";
-import FormRoute from "./form.route";
+import FormRoute, { meta } from "./form.route";
 
 vi.mock("./demo-server", async (importOriginal) => ({
 	...(await importOriginal<typeof import("./demo-server")>()),
@@ -20,7 +20,7 @@ beforeEach(() => {
 });
 
 function renderForm(url = "/examples/form") {
-	return renderRoute([{ path: "/examples/form", Component: FormRoute }], {
+	return renderRoute([{ path: "/examples/form", Component: FormRoute, meta }], {
 		initialEntries: [url],
 	});
 }
@@ -45,6 +45,7 @@ async function fillValidForm(user: UserEvent) {
 
 it("shows errors linked to their fields after blur or submit", async () => {
 	const { user } = renderForm();
+	expect(document.title).toBe("Form example · React Router SPA");
 	await user.type(nameInput(), "ab");
 	expect(nameInput()).not.toHaveAttribute("aria-invalid");
 

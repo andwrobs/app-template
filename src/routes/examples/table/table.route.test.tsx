@@ -6,6 +6,7 @@ import { renderRoute } from "../../../../test-utils/render-route";
 import TableRoute, {
 	clientLoader,
 	ErrorBoundary,
+	meta,
 	shouldRevalidate,
 } from "./table.route";
 
@@ -30,6 +31,7 @@ function renderTable(url = "/examples/table") {
 				Component: TableRoute,
 				ErrorBoundary,
 				loader: clientLoader,
+				meta,
 				shouldRevalidate,
 			},
 		],
@@ -48,6 +50,7 @@ const selectAll = () => screen.getByRole("checkbox", { name: "Select All" });
 it("opens the view a URL describes", async () => {
 	renderTable("/examples/table?status=done&sort=-updated&page=2&size=bad");
 	await screen.findAllByRole("rowheader");
+	expect(document.title).toBe("Table example · React Router SPA");
 	const done = tasks
 		.filter((task) => task.status === "done")
 		.sort((a, b) => b.updated.localeCompare(a.updated));

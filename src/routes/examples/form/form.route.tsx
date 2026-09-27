@@ -2,8 +2,10 @@ import { useStore } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 import { useAppForm } from "~/lib/form/app-form";
+import { pageTitle } from "~/lib/meta/title";
 import { Button, LinkButton } from "~/lib/ui/button";
 import { FieldGroup } from "~/lib/ui/field";
+import type { Route } from "./+types/form.route";
 import { parseServerScenario, submitProjectRequest } from "./demo-server";
 import {
 	emptyProjectRequest,
@@ -11,6 +13,10 @@ import {
 	projectRequestSchema,
 	teams,
 } from "./project-request";
+
+export const meta: Route.MetaFunction = () => [
+	{ title: pageTitle("Form example") },
+];
 
 export default function FormRoute() {
 	const [searchParams] = useSearchParams();

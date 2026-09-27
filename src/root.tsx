@@ -9,10 +9,14 @@ import {
 } from "react-router";
 import { AppLayout } from "~/lib/app/AppLayout";
 import { AppProviders } from "~/lib/app/AppProviders";
+import { pageTitle } from "~/lib/meta/title";
 import { themeScript } from "~/lib/theme/theme";
 import type { Route } from "./+types/root";
 
 import "~/styles/index.css";
+
+// Routes without their own meta, and the SPA build's index.html, use this.
+export const meta: Route.MetaFunction = () => [{ title: pageTitle() }];
 
 export function HydrateFallback() {
 	return (

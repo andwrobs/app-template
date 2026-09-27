@@ -1,5 +1,6 @@
 import { NavLink } from "react-router";
 import { ThemeToggle } from "~/lib/app/ThemeToggle";
+import { appName } from "~/lib/meta/title";
 
 const navLinks: ReadonlyArray<readonly [to: string, label: string]> = [
 	["/", "Overview"],
@@ -15,7 +16,7 @@ export function AppHeader() {
 		<header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
 			<div className="mx-auto flex min-h-14 w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
 				<NavLink to="/" className="font-semibold tracking-tight">
-					React Router SPA
+					{appName}
 				</NavLink>
 				<nav
 					aria-label="Main navigation"

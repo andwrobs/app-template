@@ -1,9 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigation } from "react-router";
+import { pageTitle } from "~/lib/meta/title";
 import { queryClient } from "~/lib/query/client";
 import { Button, LinkButton } from "~/lib/ui/button";
 import type { Route } from "./+types/query.route";
 import { parseScenario, projectsQuery } from "./projects.query";
+
+export const meta: Route.MetaFunction = () => [
+	{ title: pageTitle("Query + Router example") },
+];
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 	const scenario = parseScenario(request.url);

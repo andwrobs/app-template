@@ -4,7 +4,7 @@ import { renderRoute } from "../../../../test-utils/render-route";
 import { searchWait } from "./components/DebouncedSearch";
 import { saveInterval } from "./components/ThrottledAutosave";
 import { saveNote, searchLatency } from "./demo-server";
-import PacerRoute from "./pacer.route";
+import PacerRoute, { meta } from "./pacer.route";
 
 const saves = vi.hoisted(() => ({ inFlight: 0, maxInFlight: 0 }));
 
@@ -53,7 +53,7 @@ afterEach(() => {
 function renderPacer(initialEntries = ["/examples/pacer"]) {
 	return renderRoute(
 		[
-			{ path: "/examples/pacer", Component: PacerRoute },
+			{ path: "/examples/pacer", Component: PacerRoute, meta },
 			{ path: "/other", Component: () => <p>Other page</p> },
 		],
 		{ initialEntries, userOptions: { advanceTimers: vi.advanceTimersByTime } },
@@ -80,6 +80,7 @@ const resultTitles = () =>
 
 it("waits for a pause, then writes the URL and searches once", async () => {
 	const { user } = renderPacer();
+	expect(document.title).toBe("Pacer example · React Router SPA");
 	await user.type(searchBox(), "sample");
 	expect(searchStatus()).toHaveTextContent("Waiting for you to pause…");
 	await elapse(searchWait - 1);

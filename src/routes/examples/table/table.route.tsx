@@ -11,6 +11,7 @@ import {
 	type ShouldRevalidateFunctionArgs,
 	useSearchParams,
 } from "react-router";
+import { pageTitle } from "~/lib/meta/title";
 import { queryClient } from "~/lib/query/client";
 import { Button, LinkButton } from "~/lib/ui/button";
 import {
@@ -37,6 +38,7 @@ import {
 } from "~/lib/ui/table";
 import { TextField } from "~/lib/ui/text-field";
 import { typingState, useSearchDraft } from "~/lib/url-state/useSearchDraft";
+import type { Route } from "./+types/table.route";
 import {
 	isTaskStatus,
 	pageSizes,
@@ -47,6 +49,10 @@ import {
 } from "./table-url-state";
 import { columnLabels, taskColumns, taskFeatures } from "./task-columns";
 import { type Task, taskStatuses, tasksQuery } from "./tasks.query";
+
+export const meta: Route.MetaFunction = () => [
+	{ title: pageTitle("Table example") },
+];
 
 export async function clientLoader() {
 	await queryClient.fetchQuery(tasksQuery);

@@ -4,21 +4,29 @@ import userEvent from "@testing-library/user-event";
 import { RouterProvider } from "react-aria-components";
 import {
 	createRoutesStub,
+	Meta,
 	Outlet,
 	useHref,
 	useLocation,
 	useNavigate,
 } from "react-router";
 
-type StubRoutes = Parameters<typeof createRoutesStub>[0];
+type StubRoute = Parameters<typeof createRoutesStub>[0][number];
+// Route modules type meta with their own args; the stub only calls it.
+type RouteInput = Omit<StubRoute, "meta" | "children"> & {
+	meta?: (args: never) => unknown;
+	children?: RouteInput[];
+};
 
-// Aria links navigate through the router, as in lib/app/AppProviders. The
-// output and button let tests read the URL and go Back.
+// Aria links navigate through the router, as in lib/app/AppProviders. Meta sets
+// document.title from the routes' meta exports; the output and button let tests
+// read the URL and go Back.
 function TestShell() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	return (
 		<RouterProvider navigate={navigate} useHref={useHref}>
+			<Meta />
 			<Outlet />
 			<output aria-label="Test location">
 				{location.pathname}
@@ -38,7 +46,7 @@ function TestShell() {
  * `userOptions: { advanceTimers: vi.advanceTimersByTime }`.
  */
 export function renderRoute(
-	routes: StubRoutes,
+	routes: RouteInput[],
 	{
 		initialEntries = ["/"],
 		queryClient = new QueryClient({
@@ -52,7 +60,11 @@ export function renderRoute(
 	} = {},
 ) {
 	const Stub = createRoutesStub([
-		{ Component: TestShell, HydrateFallback: () => null, children: routes },
+		{
+			Component: TestShell,
+			HydrateFallback: () => null,
+			children: routes as StubRoute[],
+		},
 	]);
 	const user = userEvent.setup(userOptions);
 	const result = render(

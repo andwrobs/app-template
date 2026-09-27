@@ -5,7 +5,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { queryClient } from "~/lib/query/client";
 import type { Route } from "./+types/query.route";
 import { projectsQuery } from "./projects.query";
-import QueryRoute, { clientLoader } from "./query.route";
+import QueryRoute, { clientLoader, meta } from "./query.route";
 
 const projects = [
 	{ id: "studio", name: "Sample design studio", status: "Active" },
@@ -94,4 +94,10 @@ it("passes query cancellation to the transport", async () => {
 	await queryClient.cancelQueries({ queryKey: ["demo-projects"] });
 	await rejected;
 	expect(transportSignal?.aborted).toBe(true);
+});
+
+it("titles the page", () => {
+	expect(meta({} as Route.MetaArgs)).toEqual([
+		{ title: "Query + Router example · React Router SPA" },
+	]);
 });

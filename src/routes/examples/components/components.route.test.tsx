@@ -1,7 +1,7 @@
 import { act, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { renderRoute } from "../../../../test-utils/render-route";
-import ComponentsRoute from "./components.route";
+import ComponentsRoute, { meta } from "./components.route";
 
 // jsdom lacks the layout APIs the chart and carousel read.
 class ResizeObserverStub {
@@ -33,13 +33,14 @@ afterEach(() => {
 
 function renderComponents() {
 	return renderRoute(
-		[{ path: "/examples/components", Component: ComponentsRoute }],
+		[{ path: "/examples/components", Component: ComponentsRoute, meta }],
 		{ initialEntries: ["/examples/components"] },
 	);
 }
 
 it("renders every family without errors", () => {
 	renderComponents();
+	expect(document.title).toBe("Components · React Router SPA");
 	for (const family of [
 		"Inputs and fields",
 		"Selection",

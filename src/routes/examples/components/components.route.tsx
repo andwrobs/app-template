@@ -1,3 +1,5 @@
+import { pageTitle } from "~/lib/meta/title";
+import type { Route } from "./+types/components.route";
 import { CollectionsSection } from "./components/CollectionsSection";
 import { DisplaySection } from "./components/DisplaySection";
 import { InputsSection } from "./components/InputsSection";
@@ -13,6 +15,10 @@ const sections = [
 	["#display", "Display"],
 	["#collections", "Collections"],
 ] as const;
+
+export const meta: Route.MetaFunction = () => [
+	{ title: pageTitle("Components") },
+];
 
 export default function ComponentsRoute() {
 	return (

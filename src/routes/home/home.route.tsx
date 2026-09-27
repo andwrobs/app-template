@@ -1,6 +1,7 @@
 import { ArrowUpRightIcon } from "lucide-react";
-
+import { pageTitle } from "~/lib/meta/title";
 import { LinkButton } from "~/lib/ui/button";
+import type { Route } from "./+types/home.route";
 
 const examples: ReadonlyArray<readonly [href: string, label: string]> = [
 	["/examples/query", "Query + Router"],
@@ -9,6 +10,8 @@ const examples: ReadonlyArray<readonly [href: string, label: string]> = [
 	["/examples/pacer", "TanStack Pacer"],
 	["/examples/components", "Components"],
 ];
+
+export const meta: Route.MetaFunction = () => [{ title: pageTitle() }];
 
 export default function HomeRoute() {
 	return (

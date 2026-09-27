@@ -1,3 +1,5 @@
+import { pageTitle } from "~/lib/meta/title";
+import type { Route } from "./+types/pacer.route";
 import {
 	DebouncedSearch,
 	useDebouncedSearch,
@@ -6,6 +8,10 @@ import {
 	ThrottledAutosave,
 	useThrottledAutosave,
 } from "./components/ThrottledAutosave";
+
+export const meta: Route.MetaFunction = () => [
+	{ title: pageTitle("Pacer example") },
+];
 
 export default function PacerRoute() {
 	const searchProps = useDebouncedSearch();
