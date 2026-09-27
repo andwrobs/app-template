@@ -21,6 +21,7 @@ const templateRoot = path.resolve(import.meta.dirname, "..");
 // An allowlist: anything not named here (starter tracking, this CLI, build
 // output, caches, node_modules, .git, env files, other skills) stays behind.
 const files = [
+	".env.example",
 	".gitignore",
 	".npmrc",
 	".nvmrc",

@@ -11,6 +11,9 @@ npm run dev    # http://localhost:3000
 npm test       # lint, typecheck, tests, build
 ```
 
+Settings live in `VITE_` variables: copy `.env.example` to `.env.local` to change
+them. `src/lib/env` validates them, so a bad value stops `dev` and `build`.
+
 `npm run build` writes static files to `build/client`; there's no Node server.
 `npm run preview` serves them on port 4000. Hosts must serve `index.html` for app
 routes and serve assets and API paths normally.

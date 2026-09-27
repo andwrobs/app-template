@@ -67,6 +67,7 @@ it("copies an app with its agent files and none of the starter's tracking", () =
 	expect(create(app)).toBe(0);
 
 	for (const kept of [
+		".env.example",
 		"AGENTS.md",
 		"CLAUDE.md",
 		".codex/README.md",
