@@ -40,7 +40,8 @@ output, Node 24 or npm 11, a real static host, and hosted CI and Dependabot (not
 
 ## Active
 
-None.
+2026-09-27, branch `app-foundations`: APP-01, APP-03, APP-02, APP-05, API-02, APP-04,
+AGENT-01, and MAINT-01, in that order, one commit each.
 
 ## Next
 

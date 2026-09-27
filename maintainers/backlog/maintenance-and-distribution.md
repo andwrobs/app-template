@@ -21,13 +21,14 @@ documented, and test output stays out of apps.
 
 P2 · M · Build. Depends on: none.
 
-**Outcome:** a read-only report of upstream changes to the copied Aria source and the
-Router skill, which dependency PRs miss.
+**Outcome:** a monthly, read-only report of upstream changes to the copied Aria
+source, the Router skill, and npm packages, which dependency PRs miss.
 
-**Acceptance:** compares inventory hashes with fresh upstream copies, records version
-and date, and tells a fetch failure apart from no change. Never overwrites local
-files. Scheduled in GitHub only once the repository exists, with notification
-behavior chosen explicitly.
+**Acceptance:** compares inventory hashes with fresh upstream copies, flags new
+registry components and a newer create-react-router, includes `deps:check`, records
+the date, and tells a fetch failure apart from no change. Never overwrites tracked
+files. A monthly local scheduled agent runs it and files findings as backlog items;
+it never pushes or publishes.
 
 **Checks:** unchanged, changed, and unavailable cases, plus one real report.
 

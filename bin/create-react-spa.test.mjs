@@ -19,7 +19,7 @@ import { main } from "./create-react-spa.mjs";
 const templateRoot = path.resolve(import.meta.dirname, "..");
 // The starter's "Keep apps clean" pattern: no starter tracking in apps.
 const starterOnly =
-	/maintainers\/|template-(task|maintenance)|status\.md|backlog|Filebonsai|(UI|DEMO|QUALITY|MAINT|DIST|API)-0[0-9]/;
+	/maintainers\/|template-(task|maintenance)|status\.md|backlog|Filebonsai|(UI|DEMO|QUALITY|MAINT|DIST|API|APP|AGENT)-0[0-9]/;
 
 let workspace;
 let output;

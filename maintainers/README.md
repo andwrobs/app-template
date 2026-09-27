@@ -26,7 +26,7 @@ CLI leaves them out. Before finishing, this must print nothing (the CLI's tests 
 same check on a generated app):
 
 ```bash
-grep -rnE 'maintainers/|template-(task|maintenance)|status\.md|backlog|Filebonsai|(UI|DEMO|QUALITY|MAINT|DIST|API)-0[0-9]' \
+grep -rnE 'maintainers/|template-(task|maintenance)|status\.md|backlog|Filebonsai|(UI|DEMO|QUALITY|MAINT|DIST|API|APP|AGENT)-0[0-9]' \
   AGENTS.md CLAUDE.md docs .agents/skills/react-router .codex .github scripts src public test-utils \
   biome.json components.json package.json tsconfig.json vite.config.ts react-router.config.ts
 ```
