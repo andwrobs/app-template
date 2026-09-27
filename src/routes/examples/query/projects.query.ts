@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
+import { fetchJson } from "~/lib/api/api";
 
 const projectsSchema = z.array(
 	z.object({ id: z.string(), name: z.string(), status: z.string() }),
@@ -21,10 +22,9 @@ export function projectsQuery(scenario: Scenario) {
 					"This is the demonstration error. Return to the sample projects to recover.",
 				);
 			}
-			const response = await fetch("/demo/projects.json", { signal });
-			if (!response.ok)
-				throw new Error(`Projects request failed (${response.status}).`);
-			const projects = projectsSchema.parse(await response.json());
+			const projects = await fetchJson("/demo/projects.json", projectsSchema, {
+				signal,
+			});
 			return scenario === "empty" ? [] : projects;
 		},
 		// Deliberate demo failures should surface immediately.

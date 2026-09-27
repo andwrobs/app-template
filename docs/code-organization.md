@@ -18,6 +18,7 @@ src/
       utils.ts              # cn
     app/                    # Providers, layouts, header, route focus, skip link
     query/client.ts         # QueryClient shared by loaders and React
+    api/                    # fetchJson, api, and ApiError
     env/                    # VITE_ settings: schema (checked by vite.config.ts), env
     form/                   # TanStack Form bound to lib/ui fields
     meta/                   # App name and page titles

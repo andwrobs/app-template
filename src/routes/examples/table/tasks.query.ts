@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
+import { fetchJson } from "~/lib/api/api";
 
 export const taskStatuses = {
 	todo: "To do",
@@ -22,11 +23,6 @@ export type TaskStatus = Task["status"];
 
 export const tasksQuery = queryOptions({
 	queryKey: ["demo-tasks"],
-	queryFn: async ({ signal }) => {
-		const response = await fetch("/demo/tasks.json", { signal });
-		if (!response.ok) {
-			throw new Error(`Tasks request failed (${response.status}).`);
-		}
-		return z.array(taskSchema).parse(await response.json());
-	},
+	queryFn: ({ signal }) =>
+		fetchJson("/demo/tasks.json", z.array(taskSchema), { signal }),
 });

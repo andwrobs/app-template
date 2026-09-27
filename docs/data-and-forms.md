@@ -12,8 +12,10 @@ actions. Query owns remote state: caching, freshness, deduplication, and invalid
   `ensureQueryData` returns stale data immediately, so use it only when that's what
   you want. `prefetchQuery` is for speculative warming, and its errors don't reach
   route boundaries.
-- Pass Query's `signal` to fetch. Don't cancel shared keys when leaving a route,
-  because another consumer may need them.
+- Fetch with `lib/api`: `fetchJson` parses with a Zod schema and throws one
+  `ApiError` whose `kind` is `network`, `http`, or `invalid-response`; `api` resolves
+  paths against `VITE_API_URL`. Pass Query's `signal`; aborts pass through. Don't
+  cancel shared keys when leaving a route, because another consumer may need them.
 - With auth, put the user scope in query keys, and cancel and clear those queries when
   the identity changes.
 - Don't copy remote data into Zustand, loader return values, or effects.

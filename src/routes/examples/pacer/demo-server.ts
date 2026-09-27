@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
+import { fetchJson } from "~/lib/api/api";
 
 // Stand-ins for API calls. Nothing leaves the browser except the fixture read.
 
@@ -17,14 +18,11 @@ export function searchQuery(term: string) {
 		queryKey: ["demo-search", term],
 		queryFn: async ({ signal }) => {
 			await wait(searchLatency(term), signal);
-			const response = await fetch("/demo/tasks.json", { signal });
-			if (!response.ok) {
-				throw new Error(`Search failed (${response.status}).`);
-			}
+			const tasks = await fetchJson("/demo/tasks.json", resultsSchema, {
+				signal,
+			});
 			const needle = term.toLowerCase();
-			return resultsSchema
-				.parse(await response.json())
-				.filter((task) => task.title.toLowerCase().includes(needle));
+			return tasks.filter((task) => task.title.toLowerCase().includes(needle));
 		},
 		enabled: term !== "",
 	});
