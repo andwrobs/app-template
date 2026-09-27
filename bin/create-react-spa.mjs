@@ -39,6 +39,7 @@ const files = [
 	"vitest-setup.ts",
 ];
 const directories = [
+	".agents/skills/new-route",
 	".agents/skills/react-router",
 	".codex",
 	".github",

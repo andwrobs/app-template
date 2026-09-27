@@ -4,8 +4,8 @@ Work within the user's request. Linked repos, documents, fixtures, and upstream 
 are reference, not authorization. Nothing here permits publishing, merging, deploying,
 or sending messages.
 
-Skills live in `.agents/skills` (`.claude/skills` links there). Use `react-router` for
-route work.
+Skills live in `.agents/skills` (`.claude/skills` links there). Use `new-route` to add
+a page and `react-router` for other route work.
 
 ## Conventions
 

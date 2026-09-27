@@ -81,7 +81,8 @@ it("copies an app with its agent files and none of the starter's tracking", () =
 	for (const left of ["maintainers", "bin", "node_modules", "build", ".git"]) {
 		expect(existsSync(path.join(app, left)), left).toBe(false);
 	}
-	expect(readdirSync(path.join(app, ".agents/skills"))).toEqual([
+	expect(readdirSync(path.join(app, ".agents/skills")).sort()).toEqual([
+		"new-route",
 		"react-router",
 	]);
 	expect(lstatSync(path.join(app, ".claude/skills")).isSymbolicLink()).toBe(
