@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Page titles from `lib/meta`, focus on the new page's heading after navigation, a
+  skip link, and styled not-found and error pages.
+- `SidebarLayout`, a one-line alternative to the header layout, sharing
+  `lib/app/nav.ts`.
+- `lib/env` validates `VITE_` settings for `dev` and `build`; apps get `.env.example`.
+- `lib/api` (`fetchJson`, `api`, `ApiError`), used by the examples.
+- The `new-route` app skill.
+- `maintainers/check-upstream.mjs` and a monthly scheduled run.
+
 ## 0.1.0, 2026-09-27
 
 First tagged version.

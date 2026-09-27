@@ -7,7 +7,8 @@ P1 · M · Build. Depends on: none.
 **Outcome:** one command, locally and in CI, proves the built SPA works on a static host.
 
 **Acceptance:** pinned Playwright Chromium at desktop and mobile sizes covers direct
-refresh of each example route, dark and reduced-motion emulation on
+refresh of each example route and an unknown URL, route focus after navigation, the
+sidebar layout, dark and reduced-motion emulation on
 `/examples/components`, back and forward, Aria navigation without a reload,
 populated, empty, and error states with recovery, a missing route, network failure,
 and keyboard focus. axe runs on key states. Screenshots and traces are saved on
@@ -16,21 +17,6 @@ for missing assets and API paths, not by an SSR server. The CI browser download 
 documented, and test output stays out of apps.
 
 **Checks:** fresh-clone baseline plus the browser command. Look at the screenshots.
-
-## MAINT-01 Source drift intake
-
-P2 · M · Build. Depends on: none.
-
-**Outcome:** a monthly, read-only report of upstream changes to the copied Aria
-source, the Router skill, and npm packages, which dependency PRs miss.
-
-**Acceptance:** compares inventory hashes with fresh upstream copies, flags new
-registry components and a newer create-react-router, includes `deps:check`, records
-the date, and tells a fetch failure apart from no change. Never overwrites tracked
-files. A monthly local scheduled agent runs it and files findings as backlog items;
-it never pushes or publishes.
-
-**Checks:** unchanged, changed, and unavailable cases, plus one real report.
 
 ## MAINT-02 Remaining dependencies and utilities
 
@@ -45,7 +31,9 @@ open-ended ranges or speculative utilities.
   groups with evidence.
 - List the utilities present and the ones worth adding. Audit advisories by runtime,
   dev, and transitive exposure; as of 2026-09-27, `npm audit` reports a moderate Vitest
-  advisory (dev only). Decide on shadcn's `cn` package, which registry items now import
+  advisory (dev only). The [2026-09-27 upstream report](../reports/upstream-2026-09-27.md)
+  lists 27 packages behind, with majors for Vitest 5, TypeScript 7, jsdom 30,
+  jest-dom 7, and `@types/node` 26. Decide on shadcn's `cn` package, which registry items now import
   ([inventory](../ui-inventory.md)).
 - `test-utils/zustand-store-mock.ts` documents a selector its signature doesn't
   support. Fix it with a real consumer and test, or delete it.
@@ -88,7 +76,8 @@ folder, and `npm test` there.
 
 P3 · M · Build. Depends on: none.
 
-**Outcome:** an optional OpenAPI transport recipe for apps that have a backend.
+**Outcome:** an optional OpenAPI transport recipe for apps that have a backend, built
+on `lib/api`.
 
 **Acceptance:** a pinned generator, a local schema fixture or explicit endpoint,
 generated code in a named capability, a handwritten typed transport with error

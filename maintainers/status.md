@@ -1,6 +1,7 @@
 # Status
 
-Updated 2026-09-27. Tagged `v0.1.0` in the local repository; nothing is pushed.
+Updated 2026-09-27. `main` is tagged `v0.1.0`; branch `app-foundations` holds one
+commit per item below, unmerged. Nothing is pushed.
 
 ## Verified state
 
@@ -10,21 +11,23 @@ in their engines.
 
 | Check | Result |
 | --- | --- |
-| `npm test` | Pass: Biome, typegen + tsc, 38 tests in 10 files, SPA build. Vite warns that the `/examples/components` chunk is 681 kB (recharts); the entry chunk is unchanged at 182.5 kB. |
-| Fresh clone of the commit | `npm ci` and `npm test` pass (38 tests). From the clone, `bin/create-react-spa.mjs` makes a full app (35 tests pass) and a `--no-examples` app (5 tests pass); `--offline` installs from the cache. |
-| Rendered, dev server | Pacer: debounce, URL write, results, deep link. Components: every family renders; dialog, alert dialog, sheet, popover, menu, and command palette return focus; menus skip disabled items; command palette filters; dark theme renders every family; no page-level overflow at 390 px (a long word now wraps). Form and table checks from 2026-09-26 still apply. |
-| Rendered, generated app's `npm run preview` | Direct loads of `/examples/pacer?q=sample` and `/examples/components` render, the theme script is in `<head>`, no console errors |
-| Regression checks | Each fails a test when removed: the search debouncer's unmount cancel, the stale-search guard, and the command palette's `Command` wrapper (plus the 2026-09-26 form and table checks) |
-| "Keep apps clean" grep; relative-link check over every `.md` | Empty; 0 broken links. The CLI tests run the same grep over a generated app. |
+| Fresh clone of `app-foundations` | `npm ci` and `npm test` pass: Biome, typegen + tsc, 60 tests in 18 files, SPA build (Vite warns about the 681 kB `/examples/components` chunk; the entry chunk is unchanged). A generated full app passes 52 tests; a `--no-examples` app passes 21. |
+| `new-route` skill, followed in a generated bare app | Added `/things` with query options, loader, error boundary, nav entry, and 3 tests; `npm test` passed |
+| Rendered, dev server | Skip link is the first Tab stop and moves focus to the content; header navigation focuses the new `h1` and sets the title; typing in the table's search keeps focus; unknown URLs show the not-found page; the sidebar layout (swapped in temporarily) marks the current page, collapses to icons, and at 390 px opens a sheet that closes after a choice, with focus on the new heading. Earlier checks of the examples and components still apply. |
+| Rendered, `npm run preview` | Direct loads of `/no/such/page` and `/examples/table?status=done&page=2` render with their titles; no console errors |
+| `VITE_API_URL=ftp://…` build | Fails with the setting and fix named; a normal build passes |
+| Upstream report, live | 52 of 52 registry components and the Router skill source unchanged; 27 packages behind ([report](reports/upstream-2026-09-27.md)) |
+| "Keep apps clean" grep; relative-link check over every `.md` | Empty; 0 broken links |
 
-The starter has the Framework SPA shell, the aria-nova catalog (see the
-[UI inventory](ui-inventory.md)), `lib/form`, `lib/theme`, `lib/url-state`, five
-removable examples, and `bin/create-react-spa.mjs`.
+The starter has the Framework SPA shell with titles, route focus, a skip link, and
+not-found and error pages; header and sidebar layouts; the aria-nova catalog;
+`lib/api`, `lib/env`, `lib/form`, `lib/meta`, `lib/theme`, and `lib/url-state`; five
+removable examples; the `new-route` and `react-router` app skills; the CLI; and the
+monthly upstream report.
 
-Not verified: reduced motion in a browser (the CSS rule is in place; QUALITY-01 will
-emulate it), toast placement in a screenshot (the DOM shows it on screen), screen-reader
-output, Node 24 or npm 11, a real static host, and hosted CI and Dependabot (not pushed).
-`npm audit` reports a moderate Vitest advisory (dev only; MAINT-02).
+Not verified: reduced motion in a browser (QUALITY-01), screen-reader speech, the
+scheduled report's first run (due 2026-10-01), Node 24 or npm 11, a real static host,
+and hosted CI (not pushed).
 
 ## Completed
 
@@ -36,21 +39,25 @@ output, Node 24 or npm 11, a real static host, and hosted CI and Dependabot (not
 | UI-01 Aria catalog | All 52 installable aria-nova components with hashes, dependencies, licenses, and local changes in the [inventory](ui-inventory.md). `drawer` (Base UI) left out for `sheet`. `/examples/components` shows every family with keyboard, focus return, disabled, validation, dark theme, and long content; `lib/theme` adds the theme toggle and head script; `index.css` adds reduced motion. | 4 route tests, checks above |
 | DEMO-03 Pacer | `/examples/pacer`: a debounced URL search (Query results, stale answers never win, IME, clearing, Enter to flush, Cancel, unmount and Back cancel) and a throttled autosave through a Query mutation (Save now, Discard, flush on unmount). Components use the view-plus-hook pattern. | 8 controlled-time tests, checks above |
 | DIST-01 and DIST-02 | [Decision 0002](decisions/0002-distribution.md): own repository, private, MIT, SemVer tags. `bin/create-react-spa.mjs` copies an allowlist, renames package and lockfile, records provenance, and supports `--no-examples`, `--no-install`, and `--offline`. create-react-router's `--template` was ruled out (copies starter files, adds the upstream skill). | 3 CLI tests, fresh-clone checks above |
+| APP-01, APP-02, APP-03 | Titles from `lib/meta` on every route and in `index.html`; a catch-all not-found route and a styled root error boundary; `RouteFocus` and a skip link in the layouts | 9 tests, checks above |
+| APP-04 Sidebar shell | `SidebarLayout` swaps in for `AppLayout` in `root.tsx`; both read `lib/app/nav.ts`; `SidebarInset` renders a `div` | 3 tests, checks above |
+| APP-05, API-02 | `lib/env` schema checked by `vite.config.ts`, `.env.example` for apps; `lib/api` with `ApiError` kinds, used by the examples | 6 tests, checks above |
+| AGENT-01 `new-route` skill | App skill for adding a page; `AGENTS.md` points to it and the CLI copies it | Followed in a generated app |
+| MAINT-01 Upstream report | `maintainers/check-upstream.mjs` and the "Starter upstream report" scheduled task (1st of the month, 09:00, new worktree and branch, never pushes) | 5 tests, one live report |
 | Starter/app split | Starter tracking moved to `maintainers/` and the `template-*` skills. Apps get `AGENTS.md`, `README.md`, and three docs. `docs/README.md` removed. Markdown cut from 8,227 to 5,848 words (app-inherited docs: 3,728 to 2,444) with hedges removed. | Checks above |
 
 ## Active
 
-2026-09-27, branch `app-foundations`: APP-01, APP-03, APP-02, APP-05, API-02, APP-04,
-AGENT-01, and MAINT-01, in that order, one commit each.
+None.
 
 ## Next
 
-1. DIST-03 once the owner says go: create the private remote, push `main` and
-   `v0.1.0`, and confirm CI and Dependabot.
-2. QUALITY-01. It now has five example routes, dark and reduced-motion emulation, and
-   the CLI's generated app to cover.
-3. MAINT-02: the Vitest advisory, React 19.3, shadcn's `cn` package, the Zustand mock,
-   and Lefthook.
-4. DEMO-04, then MAINT-01.
+1. Review and merge `app-foundations` into `main`, then tag `v0.2.0` (see
+   maintenance.md, Releases). The scheduled report uses `main` once it has the script.
+2. DIST-03 once the owner says go.
+3. QUALITY-01, now including the not-found URL, route focus, and the sidebar layout.
+4. MAINT-02, starting from the upstream report: Vitest 5 (fixes the advisory),
+   TypeScript 7, jsdom 30, and the rest.
+5. DEMO-04, then MAINT-03 and API-01.
 
 Install Node 24 locally (`nvm install 24`) so checks run on the preferred runtime.
