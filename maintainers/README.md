@@ -16,7 +16,8 @@ Root `AGENTS.md` applies here too. Starter work adds:
   releases, and `bin/create-react-spa.mjs`. The [changelog](CHANGELOG.md) lists
   releases.
 - The [UI inventory](ui-inventory.md) records where `src/lib/ui` came from.
-- The [intake audit](audit-2026-09-26.md) is a dated record. Don't update it.
+- The [intake audit](audit-2026-09-26.md) and `reports/` are dated records. Don't
+  update them.
 
 ## Keep apps clean
 

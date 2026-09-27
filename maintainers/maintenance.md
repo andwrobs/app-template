@@ -8,9 +8,14 @@ refreshed separately. The lockfile covers only packages.
 - `npm run deps:check` lists declared, locked, and latest versions. It writes nothing.
 - Dependabot (weekly npm, monthly Actions, grouped, no auto-merge) runs only once this
   folder is a GitHub repository root, which it isn't yet.
-- Review the create-react-router app skill on each Router release. Review registry
-  source and coverage on each Aria or shadcn release, and monthly during active work.
-  Nothing reminds you; MAINT-01 would.
+- `node maintainers/check-upstream.mjs` reports changed or new registry components
+  (hashes vs the [inventory](ui-inventory.md)), a newer create-react-router than the
+  skill came from, and packages behind their latest release. It tells a fetch failure
+  apart from no change and changes nothing; `--save` writes
+  `maintainers/reports/upstream-<date>.md`.
+- A local scheduled task ("Starter upstream report") runs it on the 1st of each month
+  in a new worktree on `upstream/<YYYY-MM>`, files backlog items there, and commits on
+  that branch. Review and merge the branch; it never pushes or upgrades.
 - Turn significant upstream changes into a backlog item.
 
 ## React Router
