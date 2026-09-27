@@ -207,6 +207,10 @@ html {
 	body {
 		@apply bg-background text-foreground;
 	}
+	/* Headings and landmarks focused by script (route changes, skip link). */
+	[tabindex="-1"]:focus {
+		@apply outline-none;
+	}
 	html {
 		@apply font-sans;
 	}

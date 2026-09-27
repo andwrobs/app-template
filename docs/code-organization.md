@@ -16,9 +16,10 @@ src/
         date-picker.test.tsx
         index.ts            # Keeps the import path ~/lib/ui/date-picker
       utils.ts              # cn
-    app/                    # Providers, layout, header: what root.tsx wraps routes in
+    app/                    # Providers, layouts, header, route focus, skip link
     query/client.ts         # QueryClient shared by loaders and React
     form/                   # TanStack Form bound to lib/ui fields
+    meta/                   # App name and page titles
     theme/                  # Light and dark theme (Zustand) and its head script
     url-state/              # URL-backed input drafts
   routes/
