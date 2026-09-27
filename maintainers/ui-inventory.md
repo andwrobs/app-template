@@ -68,7 +68,7 @@ and `sonner` covers toasts.
 | select | `ff74d66b282f4cf6` | input-group | | trigger shows the Select root's `data-invalid`; upstream styles only `aria-invalid`, which Aria doesn't set on the trigger |
 | separator | `f12db4109c12fafd` | | | none |
 | sheet | `e3bd358ce790d337` | button | | none |
-| sidebar | `d0fc2ac3889d65bc` | button, input, separator, sheet, skeleton, tooltip, use-mobile | | stable state setter dropped from two hook dependency lists; lint suppression on the cookie that stores the open state |
+| sidebar | `d0fc2ac3889d65bc` | button, input, separator, sheet, skeleton, tooltip, use-mobile | | stable state setter dropped from two hook dependency lists; lint suppression on the cookie that stores the open state; `SidebarInset` is a `div`, since routes render their own `<main>` |
 | skeleton | `47103251bf6a7f68` | | | none |
 | slider | `ddfccff43753a6e1` | | | none |
 | sonner | `491bf53222845843` | | sonner 2.0.8 (MIT) | takes `theme` as a prop instead of reading `next-themes`, which isn't installed; `lib/app` passes the app theme |

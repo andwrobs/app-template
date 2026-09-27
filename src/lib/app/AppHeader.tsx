@@ -1,15 +1,7 @@
 import { NavLink } from "react-router";
+import { navLinks } from "~/lib/app/nav";
 import { ThemeToggle } from "~/lib/app/ThemeToggle";
 import { appName } from "~/lib/meta/title";
-
-const navLinks: ReadonlyArray<readonly [to: string, label: string]> = [
-	["/", "Overview"],
-	["/examples/query", "Query + Router"],
-	["/examples/form", "Form"],
-	["/examples/table", "Table"],
-	["/examples/pacer", "Pacer"],
-	["/examples/components", "Components"],
-];
 
 export function AppHeader() {
 	return (

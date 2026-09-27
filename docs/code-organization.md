@@ -77,6 +77,9 @@ are components, never categories. It can import React, React Aria, styling utili
 icons, and whatever its registry components need. It never imports React Router,
 TanStack, Zustand, other `~/lib` code, or routes (Biome enforces this).
 
+`root.tsx` wraps routes in `AppLayout` (a header). For a dashboard-style app, render
+`SidebarLayout` instead; both read the links in `lib/app/nav.ts`.
+
 Aria `Link` and `LinkButton` navigate client-side through the `RouterProvider` in
 `lib/app/AppProviders.tsx`, the only place the design system meets the router. Routes
 don't import `lib/app`. Extract anything a route needs from it into its own capability.
@@ -116,4 +119,4 @@ this doc together.
 Examples live in `src/routes/examples/<name>/`, with fixtures in `public/demo`, and
 shared code never imports them. To remove them, delete both folders, the
 `exampleRoutes` lines in `src/routes.ts`, and the `/examples/` links in
-`lib/app/AppHeader.tsx` and `routes/home/home.route.tsx`.
+`lib/app/nav.ts` and `routes/home/home.route.tsx`.

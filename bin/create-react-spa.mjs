@@ -55,7 +55,7 @@ const skipped = (name) => name === ".DS_Store" || name.startsWith(".env");
 const exampleFolders = ["src/routes/examples", "public/demo"];
 const exampleLineFiles = [
 	"src/routes.ts",
-	"src/lib/app/AppHeader.tsx",
+	"src/lib/app/nav.ts",
 	"src/routes/home/home.route.tsx",
 ];
 const exampleLine = /\/examples\/|exampleRoutes/;
@@ -228,15 +228,15 @@ function removeExamples(destination, { log }) {
 			removeSection(readFileSync(filePath, "utf8"), "## Examples"),
 		);
 	}
-	// Removing lines can leave code the formatter would reflow.
+	// Removing lines can leave unused imports and code the formatter would reflow.
 	const biome = path.join(templateRoot, "node_modules/.bin/biome");
 	if (existsSync(biome)) {
-		spawnSync(biome, ["format", "--write", ...exampleLineFiles], {
+		spawnSync(biome, ["check", "--write", "--unsafe", ...exampleLineFiles], {
 			cwd: destination,
 			stdio: "ignore",
 		});
 	} else {
-		log("Run npm run format in the app; the starter's Biome isn't installed.");
+		log("Run npm run fix in the app; the starter's Biome isn't installed.");
 	}
 }
 
