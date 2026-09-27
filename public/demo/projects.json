@@ -1,0 +1,9 @@
+[
+	{ "id": "studio", "name": "Sample design studio", "status": "Active" },
+	{
+		"id": "library",
+		"name": "Sample component library",
+		"status": "In review"
+	},
+	{ "id": "notes", "name": "Sample field notes", "status": "Planned" }
+]

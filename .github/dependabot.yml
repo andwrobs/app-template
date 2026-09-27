@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      react-router:
+        patterns: ["react-router", "@react-router/*"]
+      react:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
+      aria-shadcn:
+        patterns: ["react-aria-components", "shadcn"]
+      vitest:
+        patterns: ["vitest", "@vitest/*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
