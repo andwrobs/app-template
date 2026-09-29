@@ -71,10 +71,11 @@ when it creates that boundary, not merely when it shortens a file.
   and page composition. Their rendering functions don't implement feature workflows
   or assemble a collection of private component hooks. Loaders and actions delegate
   domain work to the owning module.
-- **Views** render state and emit intent. Formatting, conditional rendering, and
-  converting a DOM event to a value belong here. Submission sequences, cache
-  invalidation, selection merging, URL synchronization, retries, and timer policies
-  belong to the behavior owner.
+- **Views** render state and emit intent. Formatting and conditional rendering
+  belong here. Handlers, including ones that read an event, submission sequences,
+  cache invalidation, selection merging, URL synchronization, retries, and timer
+  policies belong to the behavior owner; views bind its handlers by reference
+  ([components and handlers](services-and-state.md#components-and-handlers)).
 - **Connected components** bind one cohesive behavior interface to a view. Keep
   this adapter thin; moving the route's entire workflow into another `.tsx` file
   doesn't separate rendering from behavior.

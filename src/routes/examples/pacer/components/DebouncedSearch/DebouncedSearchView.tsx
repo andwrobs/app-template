@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import { Button } from "~/lib/ui/button";
 import { FieldLabel } from "~/lib/ui/field";
 import { Input } from "~/lib/ui/input";
@@ -16,7 +17,10 @@ export type DebouncedSearchProps = {
 	searches: number;
 	onChange: (value: string) => void;
 	onCompositionStart: () => void;
-	onCompositionEnd: (value: string) => void;
+	onCompositionEnd: NonNullable<
+		ComponentProps<typeof Input>["onCompositionEnd"]
+	>;
+	onSearchKeyDown: NonNullable<ComponentProps<typeof TextField>["onKeyDown"]>;
 	onSearchNow: () => void;
 	onCancel: () => void;
 	onRetry: () => void;
@@ -40,18 +44,14 @@ export function DebouncedSearchView(props: DebouncedSearchProps) {
 					type="search"
 					value={props.draft}
 					onChange={props.onChange}
-					onKeyDown={(event) => {
-						if (event.key === "Enter") props.onSearchNow();
-					}}
+					onKeyDown={props.onSearchKeyDown}
 					className="w-full sm:w-72"
 				>
 					<FieldLabel>Search sample tasks</FieldLabel>
 					<Input
 						placeholder="Try “sample”"
 						onCompositionStart={props.onCompositionStart}
-						onCompositionEnd={(event) =>
-							props.onCompositionEnd(event.currentTarget.value)
-						}
+						onCompositionEnd={props.onCompositionEnd}
 					/>
 				</TextField>
 				<Button

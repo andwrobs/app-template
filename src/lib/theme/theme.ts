@@ -31,6 +31,16 @@ function applyTheme(theme: Theme) {
 
 // Shared by the header toggle and the toaster. Starts from the class the head
 // script set; the SPA build renders without a document.
+// The header toggle binds setDark by reference.
+export function useDarkTheme() {
+	const isDark = useThemeStore((state) => state.theme === "dark");
+	const setTheme = useThemeStore((state) => state.setTheme);
+	return {
+		isDark,
+		setDark: (dark: boolean) => setTheme(dark ? "dark" : "light"),
+	};
+}
+
 export const useThemeStore = create<{
 	theme: Theme;
 	setTheme: (theme: Theme) => void;

@@ -1,5 +1,4 @@
 import { FolderIcon, InboxIcon, SettingsIcon } from "lucide-react";
-import { useState } from "react";
 import { useSearchParams } from "react-router";
 import {
 	Breadcrumb,
@@ -31,6 +30,7 @@ import {
 } from "~/lib/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/lib/ui/tabs";
 import { Demo, Section } from "./Demo";
+import { usePlaceDemo } from "./usePlaceDemo";
 
 const pages = [1, 2, 3];
 const places = [
@@ -38,11 +38,12 @@ const places = [
 	{ id: "projects", label: "Projects", icon: FolderIcon },
 	{ id: "settings", label: "Settings", icon: SettingsIcon },
 ];
+const placeIds = places.map((item) => item.id);
 
 export function NavigationSection() {
 	const [searchParams] = useSearchParams();
 	const page = Number(searchParams.get("page") ?? 1);
-	const [place, setPlace] = useState("inbox");
+	const { place, select } = usePlaceDemo(placeIds, "inbox");
 	const pageHref = (target: number) => `?page=${target}`;
 
 	return (
@@ -121,7 +122,7 @@ export function NavigationSection() {
 											<SidebarMenuItem key={item.id}>
 												<SidebarMenuButton
 													isActive={place === item.id}
-													onPress={() => setPlace(item.id)}
+													onPress={select[item.id]}
 												>
 													<item.icon aria-hidden />
 													<span>{item.label}</span>

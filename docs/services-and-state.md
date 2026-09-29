@@ -8,7 +8,7 @@ and query options), then services, then clients. Nothing imports a layer above i
 ```mermaid
 flowchart TD
     components["Components<br/>route modules · connected components · views"]
-    state["State<br/>feature hooks · Zustand stores · query options"]
+    state["State<br/>query options · stores<br/>feature · action hooks"]
     services["Services<br/>createXService factories"]
     clients["Clients<br/>lib/api · settings"]
     root[["src/services.ts<br/>composition root"]]
@@ -19,9 +19,10 @@ flowchart TD
     root -. builds each once .-> services
 ```
 
-Views and connected components reach services only through the state layer: a
-one-off action is a mutation in the feature hook, not a service call in JSX. Route
-loaders and actions use query options or a service.
+Components never import services. They reach them only through query options, feature
+and action hooks, or store actions, so every handler a component binds is defined and
+tested outside it. Route loaders use query options, and route actions delegate to the
+owning domain module.
 
 One request, from loader to screen:
 
@@ -127,7 +128,8 @@ export const billingService = createBillingService({ api, ledger: ledgerService 
 - **Never call a factory in a component or hook.** It would create a new instance on
   every render.
 - **Consumers import instances:** `import { tasksService } from "~/services"`. Query
-  options, hooks, and stores never construct services.
+  options, feature and action hooks, and stores import instances and never construct
+  services; components never import them.
 - **Swap implementations here.** A fake server, fixture data, or a demo mode changes
   this file, not its consumers.
 
@@ -252,6 +254,70 @@ export function useStartRequest() {
 - **Name coordinating hooks after the user's intent** (`useStartRequest`), not the
   stores they touch.
 
+## Components and handlers
+
+Components never import services, and they bind every handler by reference. Handlers
+come from hooks that close over their arguments.
+
+```tsx
+// useTaskActions.ts
+export function useTaskActions(taskId: string) {
+	const exportCsv = useCallback(() => tasksService.exportCsv(taskId), [taskId]);
+	return { exportCsv };
+}
+
+// TaskToolbar.tsx
+const { exportCsv } = useTaskActions(taskId);
+return <Button onPress={exportCsv}>Download CSV</Button>;
+```
+
+- **No service imports in components.** Biome enforces this for every `.tsx` file
+  except tests.
+- **Async actions with UI state use `useMutation`,** which provides pending and error
+  state.
+- **Fire-and-forget actions go through an action hook** (`useTaskActions`) that
+  returns bound handlers.
+- **Handlers are bound by reference:** `onPress={exportCsv}`, never an inline arrow
+  or a function declared in the component. Biome's `noJsxPropsBind` enforces this.
+  A state setter from `useState` can be bound directly; it has no body.
+- **Event handlers passed by reference declare no parameters.** Aria's `onPress`
+  passes a `PressEvent` first, as `onClick` passes the DOM event. A zero-parameter
+  handler ignores it; a loosely typed parameter such as `options?: { format?: string }`
+  silently receives the event and still compiles. Query's `refetch` is one, so bind a
+  `refresh` from a hook instead. Aria value callbacks (`onChange`,
+  `onSelectionChange`) pass a value, which the named action takes. A handler that
+  needs the event (a form's submit, a key check) declares it with the prop's exact
+  event type, as `lib/form/handlers.ts` does.
+- **Arguments are closed over in the hook,** never passed from the component.
+- **Why:** an inline handler is a function in the component that coverage counts as
+  missed until a test fires its event. A handler in a hook is covered with
+  `renderHook`, and route tests cover the wiring through the UI.
+- **Render props aren't handlers.** Aria calls one such as `renderEmptyState` while
+  rendering, so the lint rule needs it memoized with `useCallback`, and a test
+  covers it by rendering that state.
+
+```jsonc
+// biome.json: two of the overrides
+{
+	"includes": ["src/**/*.tsx", "!**/*.test.tsx"],
+	"linter": { "rules": { "style": { "noRestrictedImports": {
+		"level": "error",
+		"options": { "paths": {
+			"~/services": "Components never import services. Reach them through query options, a feature or action hook, or a store action."
+		} }
+	} } } }
+},
+{
+	"includes": ["src/**/*.tsx", "!src/lib/ui/**", "!**/*.test.tsx"],
+	"linter": { "rules": { "nursery": { "noJsxPropsBind": "error" } } }
+}
+```
+
+Biome replaces a rule's options per override instead of merging them, so the real
+import overrides also repeat the file's other import rules. `noJsxPropsBind` is a
+nursery rule in Biome 2.4; check its name and behavior when upgrading Biome. It skips
+`lib/ui`, the vendored registry code, which is refreshed by diffing against upstream.
+
 ## Testing
 
 Test each layer through its public surface, with fakes wherever the architecture
@@ -262,8 +328,9 @@ allows them.
 | Services | Call the factory with fake `Deps`; assert on the returned interface | `ApiClient`, settings, and other services, typed as their interfaces |
 | Query options | Through the route with `renderRoute` and a cleared `QueryClient` | `fetch`, or the service instance with `vi.spyOn` |
 | Stores | Call actions and assert on `getState()`; `reset()` in `beforeEach` | Service instances with `vi.spyOn` |
+| Action hooks | `renderHook`, call the returned handler, assert on the service call | The service instance with `vi.spyOn` |
 | Feature and coordinating hooks | Through the component that uses them, or `renderHook` | Services with `vi.spyOn`; reset stores |
-| Routes and components | Behavior through the UI with `renderRoute` | `fetch`, or services with `vi.spyOn` |
+| Routes and components | Rendered behavior with `renderRoute`; handler logic is covered in its hook | `fetch`, or services with `vi.spyOn` |
 
 - **Test service helpers through the service's interface,** not by exporting them.
 - **Type fakes as the interface** (`const api: ApiClient = { ... }`), so contract drift
@@ -277,6 +344,18 @@ it("lists tasks, passing the caller's signal to the client", async () => {
 
 	await expect(createTasksService({ api }).list({ signal })).resolves.toEqual(tasks);
 	expect(api.request).toHaveBeenCalledWith("tasks", expect.anything(), { signal });
+});
+```
+
+```ts
+// useTaskActions.test.ts
+it("exports the task it was given", () => {
+	const exportCsv = vi.spyOn(tasksService, "exportCsv").mockResolvedValue();
+	const { result } = renderHook(() => useTaskActions("T-1"));
+
+	result.current.exportCsv();
+
+	expect(exportCsv).toHaveBeenCalledWith("T-1");
 });
 ```
 
@@ -296,9 +375,11 @@ deciding it case by case.
 
 ## Review
 
-Check, in order: dependency direction, remote data in stores, decisions in store
-actions, store-to-store writes or subscriptions, factories used outside the
-composition root, and missing interfaces or `Deps` that aren't interfaces. Report
+Check, in order: dependency direction, service imports in components, handlers that
+are inline or declared in a component, by-reference handlers with loose parameters, remote data
+in stores, decisions in store actions, store-to-store writes or subscriptions,
+factories used outside the composition root, and missing interfaces or `Deps` that
+aren't interfaces. Report
 each violation with its rule and a concrete fix.
 
 ## Examples
@@ -310,5 +391,10 @@ each violation with its rule and a concrete fix.
 - Query options: `query/projects.query.ts`, `table/tasks.query.ts`.
 - A mutation calling a service:
   `form/components/ProjectRequestForm/useProjectRequestForm.ts`.
+- Handlers from hooks, bound by reference: `table/components/TaskTable/useTaskTable.ts`,
+  `query/useProjects.ts` (`refresh` rather than `refetch`),
+  `pacer/components/ThrottledAutosave/useThrottledAutosave.ts`, and the catalog's
+  `components/components/useOverlayDemos.ts`, each with `renderHook` tests where the
+  route tests don't fire every handler.
 - Tests that swap a fake server with `vi.spyOn`: `form/form.route.test.tsx` and
   `pacer/pacer.route.test.tsx`.

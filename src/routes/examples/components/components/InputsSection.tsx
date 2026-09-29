@@ -29,9 +29,10 @@ import { Textarea } from "~/lib/ui/textarea";
 import { Toggle } from "~/lib/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "~/lib/ui/toggle-group";
 import { Demo, Section } from "./Demo";
+import { usePendingDemo } from "./usePendingDemo";
 
 export function InputsSection() {
-	const [isPending, setIsPending] = useState(false);
+	const { isPending, simulateSave } = usePendingDemo();
 	const [username, setUsername] = useState("ab");
 	const usernameError =
 		username.trim().length < 3 ? "Use at least 3 characters." : undefined;
@@ -53,13 +54,7 @@ export function InputsSection() {
 					<ArrowRightIcon />
 				</Button>
 				<Button isDisabled>Disabled</Button>
-				<Button
-					isPending={isPending}
-					onPress={() => {
-						setIsPending(true);
-						setTimeout(() => setIsPending(false), 1500);
-					}}
-				>
+				<Button isPending={isPending} onPress={simulateSave}>
 					{isPending && <Spinner data-icon="inline-start" />}
 					{isPending ? "Saving" : "Pending state"}
 				</Button>

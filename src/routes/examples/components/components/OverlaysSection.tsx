@@ -1,7 +1,5 @@
 import { InfoIcon, MoreHorizontalIcon } from "lucide-react";
-import { useState } from "react";
 import { Pressable } from "react-aria-components";
-import { toast } from "sonner";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -68,9 +66,10 @@ import {
 import { TextField } from "~/lib/ui/text-field";
 import { Tooltip, TooltipTrigger } from "~/lib/ui/tooltip";
 import { Demo, Section } from "./Demo";
+import { useOverlayDemos } from "./useOverlayDemos";
 
 export function OverlaysSection() {
-	const [commandOpen, setCommandOpen] = useState(false);
+	const demos = useOverlayDemos();
 	return (
 		<Section
 			id="overlays"
@@ -108,9 +107,7 @@ export function OverlaysSection() {
 						</AlertDialogHeader>
 						<AlertDialogFooter>
 							<AlertDialogCancel>Cancel</AlertDialogCancel>
-							<AlertDialogAction
-								onPress={() => toast.success("Sample deleted (not really).")}
-							>
+							<AlertDialogAction onPress={demos.confirmDelete}>
 								Delete
 							</AlertDialogAction>
 						</AlertDialogFooter>
@@ -165,10 +162,10 @@ export function OverlaysSection() {
 					<DropdownMenu className="w-48">
 						<DropdownMenuGroup>
 							<DropdownMenuLabel>Sample project</DropdownMenuLabel>
-							<DropdownMenuItem onAction={() => toast("Renamed")}>
+							<DropdownMenuItem onAction={demos.rename}>
 								Rename
 							</DropdownMenuItem>
-							<DropdownMenuItem onAction={() => toast("Duplicated")}>
+							<DropdownMenuItem onAction={demos.duplicate}>
 								Duplicate
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
@@ -188,30 +185,29 @@ export function OverlaysSection() {
 						</button>
 					</Pressable>
 					<ContextMenu>
-						<ContextMenuItem onAction={() => toast("Copied")}>
-							Copy
-						</ContextMenuItem>
-						<ContextMenuItem onAction={() => toast("Pasted")}>
-							Paste
-						</ContextMenuItem>
+						<ContextMenuItem onAction={demos.copy}>Copy</ContextMenuItem>
+						<ContextMenuItem onAction={demos.paste}>Paste</ContextMenuItem>
 						<ContextMenuSeparator />
 						<ContextMenuItem>Inspect</ContextMenuItem>
 					</ContextMenu>
 				</ContextMenuTrigger>
 			</Demo>
 			<Demo title="Command palette and toasts">
-				<Button variant="outline" onPress={() => setCommandOpen(true)}>
+				<Button variant="outline" onPress={demos.openCommand}>
 					Open command palette
 				</Button>
-				<CommandDialog open={commandOpen} onOpenChange={setCommandOpen}>
+				<CommandDialog
+					open={demos.commandOpen}
+					onOpenChange={demos.setCommandOpen}
+				>
 					<Command>
 						<CommandInput placeholder="Type a command…" />
 						<CommandList>
 							<CommandGroup heading="Suggestions">
-								<CommandItem onAction={() => setCommandOpen(false)}>
+								<CommandItem onAction={demos.closeCommand}>
 									New sample
 								</CommandItem>
-								<CommandItem onAction={() => setCommandOpen(false)}>
+								<CommandItem onAction={demos.closeCommand}>
 									Search tasks
 								</CommandItem>
 							</CommandGroup>
@@ -219,7 +215,7 @@ export function OverlaysSection() {
 							<CommandGroup heading="Settings">
 								<CommandItem
 									textValue="Toggle theme"
-									onAction={() => setCommandOpen(false)}
+									onAction={demos.closeCommand}
 								>
 									Toggle theme
 									<CommandShortcut>⌘T</CommandShortcut>
@@ -228,21 +224,10 @@ export function OverlaysSection() {
 						</CommandList>
 					</Command>
 				</CommandDialog>
-				<Button
-					variant="outline"
-					onPress={() =>
-						toast("Sample saved", {
-							description: "Toasts announce through a live region.",
-							action: { label: "Undo", onClick: () => toast("Undone") },
-						})
-					}
-				>
+				<Button variant="outline" onPress={demos.showSaved}>
 					Show toast
 				</Button>
-				<Button
-					variant="outline"
-					onPress={() => toast.error("The sample server is unavailable.")}
-				>
+				<Button variant="outline" onPress={demos.showError}>
 					Error toast
 				</Button>
 			</Demo>

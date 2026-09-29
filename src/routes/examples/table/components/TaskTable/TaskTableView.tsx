@@ -5,6 +5,7 @@ import {
 	ChevronsUpDownIcon,
 	Columns3Icon,
 } from "lucide-react";
+import { useCallback } from "react";
 import { Button, LinkButton } from "~/lib/ui/button";
 import {
 	DropdownMenu,
@@ -34,6 +35,39 @@ import { pageSizes } from "./table-url-state";
 import type { TaskTableProps } from "./useTaskTable";
 
 export function TaskTableView(props: TaskTableProps) {
+	// Aria calls this render prop when the body has no rows; the empty-state
+	// tests render both branches.
+	const renderEmptyState = useCallback(
+		() => (
+			<div className="space-y-3 px-4 py-8">
+				{props.matchCount === 0 ? (
+					<>
+						<p>No tasks match this search and status.</p>
+						<Button
+							variant="outline"
+							size="sm"
+							onPress={props.clearSearchAndStatus}
+						>
+							Clear search and status
+						</Button>
+					</>
+				) : (
+					<>
+						<p>Page {props.pageNumber} is past the last page.</p>
+						<Button variant="outline" size="sm" onPress={props.firstPage}>
+							Go to the first page
+						</Button>
+					</>
+				)}
+			</div>
+		),
+		[
+			props.matchCount,
+			props.pageNumber,
+			props.clearSearchAndStatus,
+			props.firstPage,
+		],
+	);
 	return (
 		<>
 			<div className="flex flex-wrap items-end gap-3">
@@ -115,35 +149,7 @@ export function TaskTableView(props: TaskTableProps) {
 							</TableHead>
 						))}
 					</TableHeader>
-					<TableBody
-						renderEmptyState={() => (
-							<div className="space-y-3 px-4 py-8">
-								{props.matchCount === 0 ? (
-									<>
-										<p>No tasks match this search and status.</p>
-										<Button
-											variant="outline"
-											size="sm"
-											onPress={props.clearSearchAndStatus}
-										>
-											Clear search and status
-										</Button>
-									</>
-								) : (
-									<>
-										<p>Page {props.pageNumber} is past the last page.</p>
-										<Button
-											variant="outline"
-											size="sm"
-											onPress={props.firstPage}
-										>
-											Go to the first page
-										</Button>
-									</>
-								)}
-							</div>
-						)}
-					>
+					<TableBody renderEmptyState={renderEmptyState}>
 						{props.rows.map((row) => (
 							<TableRow key={row.id} id={row.id}>
 								{row.getVisibleCells().map((cell) => (

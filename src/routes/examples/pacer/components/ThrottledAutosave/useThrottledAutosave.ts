@@ -1,6 +1,6 @@
 import { useAsyncThrottler } from "@tanstack/react-pacer";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { noteService } from "~/services";
 import type { ThrottledAutosaveProps } from "./ThrottledAutosaveView";
 
@@ -17,6 +17,7 @@ type SaveRequest = { text: string; revision: number };
 // an edit is waiting until its save starts or Discard passes it, and the save
 // function skips discarded revisions.
 export function useThrottledAutosave(): ThrottledAutosaveProps {
+	const noteRef = useRef<HTMLTextAreaElement>(null);
 	const [text, setText] = useState("");
 	const [edits, setEdits] = useState(0);
 	const [serverFails, setServerFails] = useState(false);
@@ -84,11 +85,14 @@ export function useThrottledAutosave(): ThrottledAutosaveProps {
 			throttler.cancel();
 			setDiscarded(requested);
 		},
-		// Saves the note as it is now, once no other save is running.
+		// Saves the note as it is now, once no other save is running. The alert
+		// closes once the retry starts, so focus returns to the note.
 		onRetry: () => {
 			requestSave(text);
 			if (!isSaving) void throttler.flush();
+			noteRef.current?.focus();
 		},
 		onServerFailsChange: setServerFails,
+		noteRef,
 	};
 }

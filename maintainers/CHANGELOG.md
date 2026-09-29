@@ -15,6 +15,9 @@
 - `docs/services-and-state.md`: layer and request diagrams, service and composition
   root rules, a state ownership table, store and cross-store rules with examples,
   per-layer testing, exceptions, and a review checklist.
+- Components never import services and never define handlers inline (Biome enforces
+  both on `.tsx` outside `lib/ui`); handlers come from hooks with `renderHook` tests.
+  Every inline handler in app components moved into a hook.
 - The `new-route` app skill.
 - `maintainers/check-upstream.mjs` and a monthly scheduled run.
 

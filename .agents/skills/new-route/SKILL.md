@@ -91,7 +91,8 @@ Import other features only through `src/lib`, never from another route's folder.
    clear it in `beforeEach`. Stub `fetch`, then assert the title, the data, the empty
    state, and the failure. Test the service with a fake `ApiClient`. The shared client retries once, so give failure assertions
    `{ timeout: 3000 }`. For workflows, assert observable transitions and relevant
-   recovery/cancellation/navigation behavior. Check that JSX handlers don't contain
-   business transitions and consumers don't need private setters or effect order.
+   recovery/cancellation/navigation behavior. Test action hooks with `renderHook`.
+   Check that views bind handlers from hooks by reference (never inline), no `.tsx`
+   imports `~/services`, and consumers don't need private setters or effect order.
 7. **Check** with `npm test`, then a rendered check at 1440×900 and 390×844 with the
    keyboard, including a direct load of the new URL.

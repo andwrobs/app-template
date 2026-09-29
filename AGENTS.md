@@ -25,8 +25,9 @@ a page and `react-router` for other route work.
 - Dependencies point one way: components → feature hooks, stores, and query options
   → services → clients (`lib/api`). A service is a stateless `createXService(deps)`
   factory typed by an `XService` interface. `src/services.ts`, the composition root,
-  builds each one once; everything else imports the instances. See
-  [services and state](docs/services-and-state.md).
+  builds each one once; everything else imports the instances. Components never
+  import services and bind handlers from hooks by reference, never inline (Biome
+  enforces both). See [services and state](docs/services-and-state.md).
 - Route-private code and tests stay beside the route. Shared code goes in a named
   `src/lib` capability. Routes never import each other's private code.
 - Prefer strong encapsulation: a reader should see what a module owns from its

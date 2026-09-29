@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { DateValue } from "react-aria-components";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { Calendar, RangeCalendar } from "~/lib/ui/calendar";
 import { Card, CardContent } from "~/lib/ui/card";
@@ -46,7 +47,7 @@ const invoices = [
 ];
 
 export function CollectionsSection() {
-	const [picked, setPicked] = useState<string>();
+	const [picked, setPicked] = useState<DateValue>();
 	return (
 		<Section
 			id="collections"
@@ -58,10 +59,10 @@ export function CollectionsSection() {
 					<Calendar
 						aria-label="Sample date"
 						className="rounded-lg border"
-						onChange={(date) => setPicked(date.toString())}
+						onChange={setPicked}
 					/>
 					<p className="text-sm text-muted-foreground" aria-live="polite">
-						{picked ? `Picked ${picked}` : "Pick a date"}
+						{picked ? `Picked ${picked.toString()}` : "Pick a date"}
 					</p>
 				</div>
 				<RangeCalendar aria-label="Sample stay" className="rounded-lg border" />

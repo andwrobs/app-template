@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { useNavigation } from "react-router";
 import { pageTitle } from "~/lib/meta/title";
 import { queryClient } from "~/lib/query/client";
@@ -6,6 +5,7 @@ import { Button, LinkButton } from "~/lib/ui/button";
 import type { Route } from "./+types/query.route";
 import { parseScenario } from "./projects";
 import { projectsQuery } from "./projects.query";
+import { useProjects } from "./useProjects";
 
 export const meta: Route.MetaFunction = () => [
 	{ title: pageTitle("Query + Router example") },
@@ -20,7 +20,9 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 }
 
 export default function QueryRoute({ loaderData }: Route.ComponentProps) {
-	const query = useQuery(projectsQuery(loaderData.scenario));
+	const { projects, isFetching, isError, refresh } = useProjects(
+		loaderData.scenario,
+	);
 	const navigation = useNavigation();
 	return (
 		<main className="mx-auto w-full max-w-5xl space-y-6 px-4 py-12 sm:px-6">
@@ -51,21 +53,21 @@ export default function QueryRoute({ loaderData }: Route.ComponentProps) {
 			<p role="status" className="text-sm text-muted-foreground">
 				{navigation.state !== "idle"
 					? "Opening scenario…"
-					: query.isFetching
+					: isFetching
 						? "Refreshing projects…"
 						: "Projects are up to date."}
 			</p>
-			{query.isError && (
+			{isError && (
 				<p role="alert">
 					Refresh failed. Previously loaded projects remain visible. Try
 					refreshing again.
 				</p>
 			)}
-			{query.data?.length === 0 ? (
+			{projects?.length === 0 ? (
 				<p>No sample projects in this view.</p>
 			) : (
 				<ul className="divide-y rounded-xl border">
-					{query.data?.map((project) => (
+					{projects?.map((project) => (
 						<li
 							key={project.id}
 							className="flex flex-wrap justify-between gap-3 p-4"
@@ -78,12 +80,7 @@ export default function QueryRoute({ loaderData }: Route.ComponentProps) {
 					))}
 				</ul>
 			)}
-			<Button
-				isDisabled={query.isFetching}
-				onPress={() => {
-					void query.refetch();
-				}}
-			>
+			<Button isDisabled={isFetching} onPress={refresh}>
 				Refresh projects
 			</Button>
 		</main>

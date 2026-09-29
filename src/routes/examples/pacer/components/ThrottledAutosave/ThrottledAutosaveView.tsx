@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import type { RefObject } from "react";
 import { Button } from "~/lib/ui/button";
 import { CheckboxButton, CheckboxField } from "~/lib/ui/checkbox";
 import { FieldDescription, FieldLabel } from "~/lib/ui/field";
@@ -20,12 +20,12 @@ export type ThrottledAutosaveProps = {
 	onDiscard: () => void;
 	onRetry: () => void;
 	onServerFailsChange: (fails: boolean) => void;
+	noteRef: RefObject<HTMLTextAreaElement | null>;
 };
 
 const timeFormat = new Intl.DateTimeFormat("en", { timeStyle: "medium" });
 
 export function ThrottledAutosaveView(props: ThrottledAutosaveProps) {
-	const notes = useRef<HTMLTextAreaElement>(null);
 	return (
 		<section aria-labelledby="throttle-heading" className="space-y-4">
 			<div className="space-y-1">
@@ -46,7 +46,7 @@ export function ThrottledAutosaveView(props: ThrottledAutosaveProps) {
 			>
 				<FieldLabel>Notes</FieldLabel>
 				<Textarea
-					ref={notes}
+					ref={props.noteRef}
 					placeholder="Type for a few seconds and watch the saves."
 				/>
 				<FieldDescription>
@@ -86,15 +86,7 @@ export function ThrottledAutosaveView(props: ThrottledAutosaveProps) {
 				<div role="alert" className="space-y-2 text-sm">
 					<p className="text-destructive">{props.error}</p>
 					<p>Your note is still here. Keep typing, or try again.</p>
-					<Button
-						variant="outline"
-						size="sm"
-						onPress={() => {
-							props.onRetry();
-							// The alert closes once the retry starts; keep focus in the note.
-							notes.current?.focus();
-						}}
-					>
+					<Button variant="outline" size="sm" onPress={props.onRetry}>
 						Try again
 					</Button>
 				</div>

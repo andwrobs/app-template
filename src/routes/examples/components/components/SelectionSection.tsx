@@ -25,6 +25,10 @@ import { Demo, Section } from "./Demo";
 
 const fruits = ["Apple", "Banana", "Blueberry", "Cherry", "Grape", "Mango"];
 
+function renderNoFruit() {
+	return <ComboboxEmpty>No fruit matches.</ComboboxEmpty>;
+}
+
 export function SelectionSection() {
 	const [volume, setVolume] = useState(40);
 	return (
@@ -80,7 +84,7 @@ export function SelectionSection() {
 					<Slider
 						aria-labelledby="volume-label"
 						value={volume}
-						onChange={(value) => setVolume(value as number)}
+						onChange={setVolume}
 					/>
 				</div>
 			</Demo>
@@ -118,11 +122,7 @@ export function SelectionSection() {
 					<FieldLabel>Favorite fruit</FieldLabel>
 					<ComboboxInput placeholder="Type to filter" />
 					<ComboboxContent>
-						<ComboboxList
-							renderEmptyState={() => (
-								<ComboboxEmpty>No fruit matches.</ComboboxEmpty>
-							)}
-						>
+						<ComboboxList renderEmptyState={renderNoFruit}>
 							{fruits.map((fruit) => (
 								<ComboboxItem key={fruit} id={fruit}>
 									{fruit}

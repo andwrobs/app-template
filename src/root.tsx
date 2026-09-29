@@ -9,6 +9,7 @@ import {
 } from "react-router";
 import { AppLayout } from "~/lib/app/AppLayout";
 import { AppProviders } from "~/lib/app/AppProviders";
+import { useReloadPage } from "~/lib/app/useReloadPage";
 import { pageTitle } from "~/lib/meta/title";
 import { themeScript } from "~/lib/theme/theme";
 import { Button, LinkButton } from "~/lib/ui/button";
@@ -86,6 +87,7 @@ export default function RootRoute() {
  * https://reactrouter.com/how-to/error-boundary#error-boundaries
  */
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+	const reload = useReloadPage();
 	let title = "Something went wrong";
 	let details = "An unexpected error stopped this page. Reload to try again.";
 	let stack: string | undefined;
@@ -112,7 +114,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 				<p className="text-muted-foreground">{details}</p>
 			</div>
 			<div className="flex flex-wrap gap-2">
-				<Button onPress={() => window.location.reload()}>Reload</Button>
+				<Button onPress={reload}>Reload</Button>
 				<LinkButton href="/" variant="outline">
 					Go to the overview
 				</LinkButton>

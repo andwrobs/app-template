@@ -23,6 +23,7 @@ import {
 import { TextField as TextFieldRoot } from "~/lib/ui/text-field";
 import { Textarea } from "~/lib/ui/textarea";
 import { useFieldContext, useFormContext } from "./form-context";
+import { useFormSubmit, useSelectChange } from "./handlers";
 
 // TanStack owns value, touched state, and validation; Aria owns labels, ids,
 // and keyboard. validationBehavior="aria" keeps the browser from validating too.
@@ -115,12 +116,13 @@ function SelectField({
 }) {
 	const field = useFieldContext<string>();
 	const errors = useVisibleErrors();
+	const onChange = useSelectChange(field);
 	return (
 		<Select
 			name={field.name}
 			placeholder={placeholder}
 			value={field.state.value || null}
-			onChange={(key) => field.handleChange(key === null ? "" : String(key))}
+			onChange={onChange}
 			onBlur={field.handleBlur}
 			isRequired={isRequired}
 			isInvalid={errors.length > 0}
@@ -165,22 +167,8 @@ function CheckboxField({ label, description, isRequired }: FieldProps) {
 }
 
 function Form(props: Omit<ComponentProps<"form">, "onSubmit" | "noValidate">) {
-	const form = useFormContext();
-	return (
-		<form
-			noValidate
-			onSubmit={(event) => {
-				event.preventDefault();
-				event.stopPropagation();
-				// TanStack Form starts another submission if asked while one runs.
-				if (form.state.isSubmitting) return;
-				// A rejected submit belongs to the submission owner (a Query mutation
-				// or fetcher), which renders the failure.
-				form.handleSubmit().catch(() => undefined);
-			}}
-			{...props}
-		/>
-	);
+	const onSubmit = useFormSubmit(useFormContext());
+	return <form noValidate onSubmit={onSubmit} {...props} />;
 }
 
 function SubmitButton({ children }: { children: ReactNode }) {

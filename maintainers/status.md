@@ -1,9 +1,11 @@
 # Status
 
 Updated 2026-09-29. `main` includes the app foundations, the encapsulation audit,
-ARCH-01/02/03, the service layering, and the services and state docs, and is pushed to
-`origin` (`andwrobs/app-template`, private). The `v0.1.0` tag and other branches
-aren't pushed. The latest release tag is `v0.1.0`; these changes are unreleased.
+ARCH-01/02/03, the service layering, the services and state docs, and the components
+and handlers rules. `origin` (`andwrobs/app-template`, private) has everything up to
+the services and state docs; the handler rules commit isn't pushed, and neither are
+the `v0.1.0` tag or other branches. The latest release tag is `v0.1.0`; these changes
+are unreleased.
 
 ## Verified state
 
@@ -148,10 +150,41 @@ rather than module mocks. `lib/theme` is a listed exception, with a comment.
   checked, only the dated audit's known one missing. A `--no-examples` app gets the
   doc without its Examples section. App-inherited docs: 4,380 → 5,730 words.
 
+## Components and handlers — 2026-09-29
+
+Synced with the owner's doc at rev 11: components never import services, handlers
+come from hooks and are bound by reference with no parameters, and action hooks join
+the state layer, the composition root, and the testing table. Their ESLint rule
+became a Biome override on non-test `.tsx` (route and `lib`), shown to fire on a
+scratch file in each. No inline handlers anywhere in app components: the owner
+rejected an allowance for local state and event adapters, because an inline handler
+is uncovered code in the component while a hook's handler is covered with
+`renderHook`. Biome's nursery `noJsxPropsBind` enforces it on non-test `.tsx` outside
+`lib/ui`; it also rejects functions declared in a component body.
+
+- Code: the query route's inline `refetch` became `useProjects().refresh` (binding
+  `refetch` directly would pass the `PressEvent` as its options); the autosave's Try
+  again moved its focus call into the hook, which owns the note's ref. All 24 inline
+  handlers moved to hooks: `lib/form/handlers.ts` (select change, form submit),
+  `useDarkTheme` in `lib/theme`, `useCloseMobileSidebar` and `useReloadPage` in
+  `lib/app`, the search's key and composition handlers, and the catalog's
+  `useOverlayDemos`, `usePendingDemo`, and `usePlaceDemo`. The calendar and slider
+  bind state setters. Each new hook has a `renderHook` test. `renderEmptyState` render
+  props are memoized with `useCallback`.
+- `lib/ui` keeps 9 inline functions: vendored registry code, refreshed by diff.
+- `npm test`: exit 0; 75 tests in 26 files. Keep apps clean: no matches. Links: 71,
+  only the dated audit's known one missing. Both Mermaid diagrams render.
+- Rendered, dev server: Refresh projects sends one request and settles; with the
+  failing server, Try again returns focus to Notes and the note saves after the
+  failure is switched off. Catalog: pending button, place select, toast, command
+  palette (closes and returns focus), calendar pick, and theme toggle all work;
+  search Enter writes the URL. No console errors.
+
 ## Completed
 
 | Work | Result | Evidence |
 | --- | --- | --- |
+| Components and handlers | Handler rules, lint for component service imports and inline handlers, every app handler moved into a tested hook | Section above |
 | Services and state docs | Parity with the owner's architecture doc and skill in `docs/services-and-state.md` | Section above |
 | Service layering | Layered services with one composition root, Biome rules, docs, and new-route steps; examples migrated | Section above |
 | ARCH-01, ARCH-02, ARCH-03 | `ProjectRequestForm`, `TaskTable`, and connected Pacer entries own their workflows; routes compose. Autosave discard drops edits queued behind a running save, Save now can't overlap a save, and failed saves recover. | 21 form/table/URL tests unchanged, 10 Pacer tests (2 new), refactor section above |

@@ -55,6 +55,29 @@
 			}
 		},
 		{
+			"includes": ["src/**/*.tsx", "!**/*.test.tsx"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["**/*.service"],
+										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									}
+								],
+								"paths": {
+									"~/services": "Components never import services. Reach them through query options, a feature or action hook, or a store action."
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
 			"includes": [
 				"src/lib/**",
 				"!**/*.service.ts",
@@ -77,6 +100,33 @@
 										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									}
 								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/lib/**/*.tsx", "!**/*.test.tsx"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["~/routes/**"],
+										"message": "src/lib must not import route code. Promote shared code into a named src/lib capability."
+									},
+									{
+										"group": ["**/*.service"],
+										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									}
+								],
+								"paths": {
+									"~/services": "Components never import services. Reach them through query options, a feature or action hook, or a store action."
+								}
 							}
 						}
 					}
@@ -132,6 +182,16 @@
 								]
 							}
 						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/**/*.tsx", "!src/lib/ui/**", "!**/*.test.tsx"],
+			"linter": {
+				"rules": {
+					"nursery": {
+						"noJsxPropsBind": "error"
 					}
 				}
 			}

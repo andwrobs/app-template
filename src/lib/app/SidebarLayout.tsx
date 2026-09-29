@@ -4,6 +4,7 @@ import { isCurrent, navLinks } from "~/lib/app/nav";
 import { RouteFocus } from "~/lib/app/RouteFocus";
 import { SkipLink } from "~/lib/app/SkipLink";
 import { ThemeToggle } from "~/lib/app/ThemeToggle";
+import { useCloseMobileSidebar } from "~/lib/app/useCloseMobileSidebar";
 import { appName } from "~/lib/meta/title";
 import { useThemeStore } from "~/lib/theme/theme";
 import { Separator } from "~/lib/ui/separator";
@@ -21,7 +22,6 @@ import {
 	SidebarProvider,
 	SidebarRail,
 	SidebarTrigger,
-	useSidebar,
 } from "~/lib/ui/sidebar";
 import { Toaster } from "~/lib/ui/sonner";
 
@@ -55,7 +55,7 @@ export function SidebarLayout({ children }: PropsWithChildren) {
 
 function AppSidebar() {
 	const { pathname } = useLocation();
-	const { isMobile, setOpenMobile } = useSidebar();
+	const closeMobileSidebar = useCloseMobileSidebar();
 	return (
 		<Sidebar collapsible="icon">
 			<SidebarHeader className="px-3 py-2 text-sm font-semibold group-data-[collapsible=icon]:sr-only">
@@ -76,9 +76,7 @@ function AppSidebar() {
 												isCurrent(pathname, to) ? "page" : undefined
 											}
 											tooltip={label}
-											onPress={() => {
-												if (isMobile) setOpenMobile(false);
-											}}
+											onPress={closeMobileSidebar}
 										>
 											<Icon aria-hidden />
 											<span>{label}</span>

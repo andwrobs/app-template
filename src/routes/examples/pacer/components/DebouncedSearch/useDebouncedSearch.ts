@@ -76,9 +76,12 @@ export function useDebouncedSearch(): DebouncedSearchProps {
 		onCompositionStart: () => {
 			composing.current = true;
 		},
-		onCompositionEnd: (value) => {
+		onCompositionEnd: (event) => {
 			composing.current = false;
-			schedule(value);
+			schedule(event.currentTarget.value);
+		},
+		onSearchKeyDown: (event) => {
+			if (event.key === "Enter") debouncer.flush();
 		},
 		onSearchNow: () => debouncer.flush(),
 		onCancel: () => {

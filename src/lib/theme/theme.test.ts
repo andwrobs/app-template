@@ -1,5 +1,6 @@
+import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { themeScript, useThemeStore } from "./theme";
+import { themeScript, useDarkTheme, useThemeStore } from "./theme";
 
 const root = document.documentElement;
 const runHeadScript = () => new Function(themeScript)();
@@ -32,5 +33,17 @@ it("starts from the stored theme, else the system theme", () => {
 
 	localStorage.setItem("theme", "light");
 	runHeadScript();
+	expect(root).not.toHaveClass("dark");
+});
+
+it("switches to dark and back through the toggle's handler", () => {
+	const { result } = renderHook(() => useDarkTheme());
+
+	act(() => result.current.setDark(true));
+	expect(result.current.isDark).toBe(true);
+	expect(root).toHaveClass("dark");
+
+	act(() => result.current.setDark(false));
+	expect(result.current.isDark).toBe(false);
 	expect(root).not.toHaveClass("dark");
 });
