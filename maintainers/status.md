@@ -1,9 +1,8 @@
 # Status
 
-Updated 2026-09-29. `main` includes the app foundations and encapsulation audit,
-fast-forwarded from `app-foundations`. Branch `encapsulation-refactors` holds ARCH-01,
-02, and 03, then the service layering, as two commits not yet merged into `main`. The latest release tag is `v0.1.0`; these
-changes are unreleased. Nothing is pushed.
+Updated 2026-09-29. `main` includes the app foundations, the encapsulation audit,
+ARCH-01/02/03, and the service layering, fast-forwarded from `encapsulation-refactors`.
+The latest release tag is `v0.1.0`; these changes are unreleased. Nothing is pushed.
 
 ## Verified state
 
@@ -155,14 +154,13 @@ None.
 
 ## Next
 
-1. Merge `encapsulation-refactors` into `main`.
-2. Prepare `v0.2.0` when requested (see maintenance.md, Releases). The scheduled
+1. Prepare `v0.2.0` when requested (see maintenance.md, Releases). The scheduled
    upstream report can now use the script on `main`.
-3. DIST-03 once the owner says go.
-4. QUALITY-01, now including the not-found URL, route focus, the sidebar layout, and
+2. DIST-03 once the owner says go.
+3. QUALITY-01, now including the not-found URL, route focus, the sidebar layout, and
    checkbox pointer input at phone width.
-5. MAINT-02, starting from the upstream report: Vitest 5 (fixes the advisory),
+4. MAINT-02, starting from the upstream report: Vitest 5 (fixes the advisory),
    TypeScript 7, jsdom 30, and the rest.
-6. DEMO-04, then MAINT-03 and API-01.
+5. DEMO-04, then MAINT-03 and API-01.
 
 Install Node 24 locally (`nvm install 24`) so checks run on the preferred runtime.
