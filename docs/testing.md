@@ -16,6 +16,11 @@ Vitest fails when it finds no tests. Test behavior through scenarios. Don't test
 generated types or wording. `test-utils/render-route.tsx` renders route modules with
 the router, Query, and the Aria link bridge, and exposes the URL and Back.
 
+Test a service by calling its factory with fakes typed as its `Deps` interfaces, so
+contract drift fails to compile, and assert through the returned interface. Don't
+export helpers for tests. Route tests stub `fetch`, or replace a fake server with
+`vi.spyOn(xService, "method")` on the instance from `~/services`.
+
 UI changes need a rendered check at 1440×900 and 390×844, with keyboard and focus.
 Check direct deep-link refresh, back and forward, the initial fallback, and whichever
 empty, error, recovery, disabled, and pending states apply. None of this is automated

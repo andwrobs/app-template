@@ -11,17 +11,19 @@ actions. Query owns remote state: caching, freshness, deduplication, and invalid
 
 - Define query options beside their owner and use them in both `clientLoader` and
   `useQuery`, through the one client in `src/lib/query/client.ts`. Tests use their
-  own caches.
+  own caches. Each `queryFn` calls a service instance and passes Query's `signal`;
+  services know nothing about Query.
 - `fetchQuery` in a loader reuses fresh data and waits for stale data.
   `ensureQueryData` returns stale data immediately, so use it only when that's what
   you want. `prefetchQuery` is for speculative warming, and its errors don't reach
   route boundaries.
-- Fetch with `lib/api`: `fetchJson` parses with a Zod schema and throws one
-  `ApiError` whose `kind` is `network`, `http`, or `invalid-response`; `api` resolves
-  paths against `VITE_API_URL`. Pass Query's `signal`; aborts pass through. Don't
-  cancel shared keys when leaving a route, because another consumer may need them.
+- Services fetch through an `ApiClient` from `lib/api`, which the composition root
+  builds with `VITE_API_URL`. It parses with a Zod schema and throws one `ApiError`
+  whose `kind` is `network`, `http`, or `invalid-response`; aborts pass through.
+  Don't cancel shared keys when leaving a route, because another consumer may need
+  them.
 - With auth, put the user scope in query keys, and cancel and clear those queries when
-  the identity changes.
+  the identity changes. Reset stores that hold user data at the same time.
 - Don't copy remote data into Zustand, loader return values, or effects.
 
 ## Forms
@@ -39,8 +41,8 @@ validation, and submission.
 - Have one validation owner. If TanStack validates, set `validationBehavior="aria"`
   and don't repeat errors from the browser or the schema.
 - Handle schema transforms at submit. Parsed output doesn't replace field values.
-- Have one submission owner: a Query mutation, or a `clientAction` through a fetcher
-  when route semantics matter. Block duplicate submits, show failures, and invalidate
+- Have one submission owner: a Query mutation whose `mutationFn` calls a service, or a
+  `clientAction` through a fetcher when route semantics matter. Block duplicate submits, show failures, and invalidate
   the affected queries on success. Router revalidation doesn't invalidate fresh Query
   data.
 - Keep parse-submit-success-reset and explicit reset/retry behavior in the form
@@ -82,6 +84,9 @@ Use Router's NavLink for navigation state, Zustand for shared client state (the 
 in `lib/theme`), and local state for everything else.
 
 ## Examples
+
+The examples read fixtures through a `demoApi` client, and the form and autosave use
+fake servers (`createDemo…Service`); `src/services.ts` wires both.
 
 - `/examples/query`: a Zod-validated JSON fixture with empty and error cases. It isn't
   a backend.

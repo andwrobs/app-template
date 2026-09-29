@@ -24,6 +24,8 @@ Included:
 - The shadcn Aria Nova catalog in `src/lib/ui`, light and dark themes, and reduced
   motion.
 - A TanStack Form binding (`src/lib/form`) and URL-backed search (`src/lib/url-state`).
+- Services built once in `src/services.ts`, with lint rules that keep them free of
+  React and app state.
 - GitHub CI and Dependabot, active once this folder is a repository root.
 
 Refresh or add components with `npm run ui:add -- <name>`. The pinned shadcn CLI

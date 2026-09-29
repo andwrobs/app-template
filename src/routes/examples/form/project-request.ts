@@ -44,3 +44,10 @@ export const emptyProjectRequest: ProjectRequestValues = {
 	details: "",
 	confirm: false,
 };
+
+// The demo server fails when the URL asks it to.
+export type ServerScenario = "default" | "error";
+
+export function parseServerScenario(search: URLSearchParams): ServerScenario {
+	return search.get("scenario") === "error" ? "error" : "default";
+}

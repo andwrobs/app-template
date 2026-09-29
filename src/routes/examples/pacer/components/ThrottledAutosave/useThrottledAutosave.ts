@@ -1,7 +1,7 @@
 import { useAsyncThrottler } from "@tanstack/react-pacer";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { saveNote } from "../../demo-server";
+import { noteService } from "~/services";
 import type { ThrottledAutosaveProps } from "./ThrottledAutosaveView";
 
 export const saveInterval = 1000;
@@ -26,7 +26,8 @@ export function useThrottledAutosave(): ThrottledAutosaveProps {
 	const [discarded, setDiscarded] = useState(0);
 
 	const save = useMutation({
-		mutationFn: (request: SaveRequest) => saveNote(request.text, serverFails),
+		mutationFn: (request: SaveRequest) =>
+			noteService.save(request.text, serverFails),
 		onSuccess: (result) => {
 			setSaved(result);
 			setSaves((count) => count + 1);

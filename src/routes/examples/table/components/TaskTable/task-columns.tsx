@@ -17,7 +17,7 @@ import {
 } from "@tanstack/react-table";
 import { Badge } from "~/lib/ui/badge";
 import { Checkbox } from "~/lib/ui/checkbox";
-import { type Task, taskStatuses } from "../../tasks.query";
+import { type Task, taskStatuses } from "../../tasks";
 
 // v9 registers only the features this table uses.
 export const taskFeatures = tableFeatures({

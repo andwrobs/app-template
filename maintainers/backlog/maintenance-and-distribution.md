@@ -77,7 +77,7 @@ folder, and `npm test` there.
 P3 · M · Build. Depends on: none.
 
 **Outcome:** an optional OpenAPI transport recipe for apps that have a backend, built
-on `lib/api`.
+on `lib/api` and injected into services through `Deps` in `src/services.ts`.
 
 **Acceptance:** a pinned generator, a local schema fixture or explicit endpoint,
 generated code in a named capability, a handwritten typed transport with error

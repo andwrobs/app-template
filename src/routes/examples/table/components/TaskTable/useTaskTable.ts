@@ -4,7 +4,8 @@ import { useMemo } from "react";
 import type { Key, Selection, SortDescriptor } from "react-aria-components";
 import { useSearchParams } from "react-router";
 import { typingState, useSearchDraft } from "~/lib/url-state/useSearchDraft";
-import { type Task, tasksQuery } from "../../tasks.query";
+import type { Task } from "../../tasks";
+import { tasksQuery } from "../../tasks.query";
 import {
 	isTaskStatus,
 	parseTableUrlState,

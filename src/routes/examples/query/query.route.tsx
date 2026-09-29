@@ -4,7 +4,8 @@ import { pageTitle } from "~/lib/meta/title";
 import { queryClient } from "~/lib/query/client";
 import { Button, LinkButton } from "~/lib/ui/button";
 import type { Route } from "./+types/query.route";
-import { parseScenario, projectsQuery } from "./projects.query";
+import { parseScenario } from "./projects";
+import { projectsQuery } from "./projects.query";
 
 export const meta: Route.MetaFunction = () => [
 	{ title: pageTitle("Query + Router example") },

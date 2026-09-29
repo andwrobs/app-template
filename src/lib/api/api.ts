@@ -1,5 +1,4 @@
 import type { z } from "zod";
-import { env } from "~/lib/env/env";
 
 export type ApiErrorKind = "network" | "http" | "invalid-response";
 
@@ -83,12 +82,24 @@ export async function fetchJson<T>(
 	return parsed.data;
 }
 
-/** Like fetchJson, with `path` resolved against VITE_API_URL. */
-export function api<T>(path: string, schema: z.ZodType<T>, init?: JsonInit) {
-	return fetchJson(apiUrl(path), schema, init);
+export interface ApiClient {
+	/** Fetches `path` from the client's base URL and parses it with `schema`. */
+	request<T>(path: string, schema: z.ZodType<T>, init?: JsonInit): Promise<T>;
 }
 
-export function apiUrl(path: string, base = env.VITE_API_URL) {
+type Deps = { baseUrl: string };
+
+// Services take a client instead of reading VITE_API_URL, so the composition
+// root decides where each one sends requests.
+export function createApiClient({ baseUrl }: Deps): ApiClient {
+	function request<T>(path: string, schema: z.ZodType<T>, init?: JsonInit) {
+		return fetchJson(apiUrl(path, baseUrl), schema, init);
+	}
+
+	return { request };
+}
+
+export function apiUrl(path: string, base: string) {
 	return `${base.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
 }
 

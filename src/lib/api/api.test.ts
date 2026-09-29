@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { z } from "zod";
-import { ApiError, api, apiUrl, fetchJson } from "./api";
+import { ApiError, apiUrl, createApiClient, fetchJson } from "./api";
 
 const fetchMock = vi.fn();
 const item = z.object({ id: z.string() });
@@ -67,6 +67,7 @@ it("resolves API paths against the configured base URL", async () => {
 		"https://api.example.test/v1/tasks/1",
 	);
 	fetchMock.mockResolvedValue(Response.json({ id: "1" }));
-	await api("/tasks/1", item);
+	const api = createApiClient({ baseUrl: "/api" });
+	await expect(api.request("/tasks/1", item)).resolves.toEqual({ id: "1" });
 	expect(fetchMock.mock.calls[0]?.[0]).toBe("/api/tasks/1");
 });

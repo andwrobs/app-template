@@ -1,15 +1,11 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import type { UserEvent } from "@testing-library/user-event";
 import { beforeEach, expect, it, vi } from "vitest";
+import { projectRequestService } from "~/services";
 import { renderRoute } from "../../../../test-utils/render-route";
-import { submitProjectRequest } from "./demo-server";
 import FormRoute, { meta } from "./form.route";
 
-vi.mock("./demo-server", async (importOriginal) => ({
-	...(await importOriginal<typeof import("./demo-server")>()),
-	submitProjectRequest: vi.fn(),
-}));
-const submit = vi.mocked(submitProjectRequest);
+const submit = vi.spyOn(projectRequestService, "submit");
 
 beforeEach(() => {
 	submit.mockReset().mockImplementation(async (request, scenario) => {

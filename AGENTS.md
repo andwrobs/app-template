@@ -21,6 +21,11 @@ a page and `react-router` for other route work.
   owns table behavior, Pacer owns rate control. Use Zustand only for shared client
   state none of them own. Zod validates boundaries. See
   [data and forms](docs/data-and-forms.md).
+- Dependencies point one way: components → feature hooks, stores, and query options
+  → services → clients (`lib/api`). A service is a stateless `createXService(deps)`
+  factory typed by an `XService` interface. `src/services.ts`, the composition root,
+  builds each one once; everything else imports the instances. See
+  [layers](docs/code-organization.md#layers).
 - Route-private code and tests stay beside the route. Shared code goes in a named
   `src/lib` capability. Routes never import each other's private code.
 - Prefer strong encapsulation: a reader should see what a module owns from its

@@ -1,6 +1,6 @@
 ---
 name: new-route
-description: Add a page or feature route to this app in its house style (route folder, title, Query-backed clientLoader, encapsulated features with thin connected components, tests beside the code, routes.ts, and nav). Use whenever you add a screen; use react-router for other route work.
+description: Add a page or feature route to this app in its house style (route folder, title, a service built in the composition root, Query-backed clientLoader, encapsulated features with thin connected components, tests beside the code, routes.ts, and nav). Use whenever you add a screen; use react-router for other route work.
 ---
 
 # New route
@@ -15,7 +15,10 @@ apply them. Use the `react-router` skill for API details.
 src/routes/<feature>/
   <feature>.route.tsx        # meta, clientLoader, default export
   <feature>.route.test.tsx
-  <thing>.query.ts           # queryOptions and the Zod schema, if it loads data
+  <thing>.ts                 # Zod schema and types, if it loads data
+  <thing>.service.ts         # ThingsService and createThingsService
+  <thing>.service.test.ts
+  <thing>.query.ts           # queryOptions calling the service instance
   components/<Name>/         # only for parts worth splitting out
     <Name>.tsx               # connected entry: binds private hook to view
     <Name>View.tsx            # renders state, emits intent
@@ -36,8 +39,14 @@ Import other features only through `src/lib`, never from another route's folder.
    workflow need no artificial layer. In the minimal example below, a direct query
    subscription is sufficient.
 
-   **Data.** In `<thing>.query.ts`, export `queryOptions` whose `queryFn` calls
-   `api(path, schema, { signal })` from `lib/api` (or `fetchJson` for a full URL).
+   **Data** follows the [layers](../../../docs/code-organization.md#layers). Put the
+   schema and types in `<thing>.ts`. In `<thing>.service.ts`, export `ThingsService`
+   and `createThingsService({ api }: Deps)`, which calls
+   `api.request(path, schema, { signal })`. In `src/services.ts`, build it once and
+   export `thingsService`; if the file has no client yet, add
+   `const api = createApiClient({ baseUrl: env.VITE_API_URL })`. In
+   `<thing>.query.ts`, export `queryOptions` whose `queryFn` calls
+   `thingsService.list({ signal })`.
 2. **Route module.**
 
    ```tsx
@@ -80,7 +89,7 @@ Import other features only through `src/lib`, never from another route's folder.
    takes route objects (`{ path, Component, loader: clientLoader, meta,
    ErrorBoundary }`); pass the shared `queryClient` when the loader uses it, and
    clear it in `beforeEach`. Stub `fetch`, then assert the title, the data, the empty
-   state, and the failure. The shared client retries once, so give failure assertions
+   state, and the failure. Test the service with a fake `ApiClient`. The shared client retries once, so give failure assertions
    `{ timeout: 3000 }`. For workflows, assert observable transitions and relevant
    recovery/cancellation/navigation behavior. Check that JSX handlers don't contain
    business transitions and consumers don't need private setters or effect order.

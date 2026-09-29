@@ -29,7 +29,7 @@ import {
 	TableRow,
 } from "~/lib/ui/table";
 import { TextField } from "~/lib/ui/text-field";
-import { taskStatuses } from "../../tasks.query";
+import { taskStatuses } from "../../tasks";
 import { pageSizes } from "./table-url-state";
 import type { TaskTableProps } from "./useTaskTable";
 

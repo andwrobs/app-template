@@ -2,10 +2,11 @@ import { useStore } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 import { useAppForm } from "~/lib/form/app-form";
-import { parseServerScenario, submitProjectRequest } from "../../demo-server";
+import { projectRequestService } from "~/services";
 import {
 	emptyProjectRequest,
 	type ProjectRequest,
+	parseServerScenario,
 	projectRequestSchema,
 } from "../../project-request";
 
@@ -18,7 +19,7 @@ export function useProjectRequestForm() {
 
 	const mutation = useMutation({
 		mutationFn: (request: ProjectRequest) =>
-			submitProjectRequest(request, scenario),
+			projectRequestService.submit(request, scenario),
 	});
 
 	const form = useAppForm({

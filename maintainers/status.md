@@ -1,8 +1,8 @@
 # Status
 
-Updated 2026-09-28. `main` includes the app foundations and encapsulation audit,
+Updated 2026-09-29. `main` includes the app foundations and encapsulation audit,
 fast-forwarded from `app-foundations`. Branch `encapsulation-refactors` holds ARCH-01,
-02, and 03, staged but not committed. The latest release tag is `v0.1.0`; these
+02, and 03, then the service layering, as two commits not yet merged into `main`. The latest release tag is `v0.1.0`; these
 changes are unreleased. Nothing is pushed.
 
 ## Verified state
@@ -90,10 +90,50 @@ ARCH-01/02/03 on `encapsulation-refactors`, Node 23.7.0/npm 10.9.2.
   can start a second save. The search's Try again may drop focus the same way the
   autosave's did (not checked).
 
+## Service layering — 2026-09-29
+
+Adopted the owner's layering: components → feature hooks, stores, query options →
+services → clients, with `createXService` factories and one composition root. Folder
+rules stay as they were. Node 23.7.0/npm 10.9.2.
+
+- `lib/api`: `createApiClient({ baseUrl })` returns an `ApiClient`; `api()` and the
+  `env` import are gone, so the root decides each client's base URL.
+- `src/services.ts` builds every service; example services sit beside their routes.
+  Query, table, and search read fixtures through a `/demo` client; the form and
+  autosave fake servers are `createDemo…Service` implementations. The form's fake
+  server no longer keeps an ID counter (IDs are random). Schemas and types moved to
+  `projects.ts`, `tasks.ts`, and `task-search.ts`.
+- Biome: service files can't import React, router, TanStack, Zustand, UI, routes,
+  query or route modules, or `~/services`; outside `src/services.ts` and tests,
+  nothing imports a `*.service` module. Biome replaces a rule's options per override,
+  so each override carries its full list. Each rule was shown to fire on a scratch
+  violation, then removed.
+- CLI: `--no-examples` strips the example lines from `src/services.ts`, leaving
+  `export {};` and the root's comment; a new assertion checks that.
+- Docs: `Layers` section in code organization, store rules (selectors, no
+  store-to-store writes or subscriptions, `getState()` only in actions or handlers,
+  context-scoped only for independent instances), store reset on identity change,
+  service tests with typed fakes, and the new-route data step. 3,656 → 4,380 words in
+  app-inherited docs.
+- `npm test`: exit 0; Biome (155 files), typegen + tsc, 64 tests in 19 files (2 new
+  service tests), build (the large components-chunk warning as before). The example
+  routes share a 68 kB `services` chunk, mostly Zod they already loaded.
+- Generated apps: full, 56 tests pass; `--no-examples`, 21 pass. In the bare app,
+  followed new-route to add `/things` with a service, a real `VITE_API_URL` client in
+  the root, and tests: 23 pass, and the route requests `/api/things`.
+- Keep apps clean: no matches. Links: 62 checked; only the dated audit's old
+  `table-url-state.ts` link is missing, as before. `git diff --check`: passed.
+  `quick_validate.py` not run (no PyYAML); only the new-route description changed.
+- Rendered, dev server, 1440×900: query projects, table deep link
+  (`?status=done&page=2`, 11–12 of 12), pacer search (16 results for "sample"),
+  autosave ("All changes saved"), and form submit ("Saved REQ-A58988") all work;
+  no console errors. Not checked at 390×844; layout didn't change.
+
 ## Completed
 
 | Work | Result | Evidence |
 | --- | --- | --- |
+| Service layering | Layered services with one composition root, Biome rules, docs, and new-route steps; examples migrated | Section above |
 | ARCH-01, ARCH-02, ARCH-03 | `ProjectRequestForm`, `TaskTable`, and connected Pacer entries own their workflows; routes compose. Autosave discard drops edits queued behind a running save, Save now can't overlap a save, and failed saves recover. | 21 form/table/URL tests unchanged, 10 Pacer tests (2 new), refactor section above |
 | Encapsulation audit and guidance | [Audit](reports/encapsulation-2026-09-28.md), repository ownership rules, and new-route skill updated. Application refactors remain ARCH-01/02/03. | Verification above |
 | Intake audit fixes | Every audit finding resolved except the MAINT-02 row (Zustand mock, Lefthook) | Source inspection and `npm test`, 2026-09-26 |
@@ -115,7 +155,7 @@ None.
 
 ## Next
 
-1. Review and commit `encapsulation-refactors`, then merge it into `main`.
+1. Merge `encapsulation-refactors` into `main`.
 2. Prepare `v0.2.0` when requested (see maintenance.md, Releases). The scheduled
    upstream report can now use the script on `main`.
 3. DIST-03 once the owner says go.

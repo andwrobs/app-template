@@ -29,7 +29,38 @@
 	},
 	"overrides": [
 		{
-			"includes": ["src/lib/**"],
+			"includes": [
+				"src/**",
+				"!src/services.ts",
+				"!**/*.service.ts",
+				"!**/*.test.ts",
+				"!**/*.test.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["**/*.service"],
+										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/lib/**",
+				"!**/*.service.ts",
+				"!**/*.test.ts",
+				"!**/*.test.tsx"
+			],
 			"linter": {
 				"rules": {
 					"style": {
@@ -40,6 +71,63 @@
 									{
 										"group": ["~/routes/**"],
 										"message": "src/lib must not import route code. Promote shared code into a named src/lib capability."
+									},
+									{
+										"group": ["**/*.service"],
+										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/lib/**/*.test.ts", "src/lib/**/*.test.tsx"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["~/routes/**"],
+										"message": "src/lib must not import route code. Promote shared code into a named src/lib capability."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/**/*.service.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"react": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps.",
+									"react-dom": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps.",
+									"react-router": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps.",
+									"zustand": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps.",
+									"~/services": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps."
+								},
+								"patterns": [
+									{
+										"group": [
+											"@tanstack/**",
+											"~/lib/ui/**",
+											"~/routes/**",
+											"**/*.query",
+											"**/*.route"
+										],
+										"message": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps."
 									}
 								]
 							}

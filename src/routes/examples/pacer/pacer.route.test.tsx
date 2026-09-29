@@ -1,20 +1,17 @@
 import { act, fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { noteService } from "~/services";
 import { renderRoute } from "../../../../test-utils/render-route";
 import { searchWait } from "./components/DebouncedSearch/useDebouncedSearch";
 import { saveInterval } from "./components/ThrottledAutosave/useThrottledAutosave";
-import { saveNote, searchLatency } from "./demo-server";
 import PacerRoute, { meta } from "./pacer.route";
+import { searchLatency } from "./task-search";
 
-const server = vi.hoisted(() => ({
-	inFlight: 0,
-	maxInFlight: 0,
-	stored: [] as string[],
-}));
+const server = { inFlight: 0, maxInFlight: 0, stored: [] as string[] };
 
-vi.mock("./demo-server", async (importOriginal) => ({
-	...(await importOriginal<typeof import("./demo-server")>()),
-	saveNote: vi.fn(async (text: string, serverFails: boolean) => {
+const save = vi
+	.spyOn(noteService, "save")
+	.mockImplementation(async (text, serverFails) => {
 		server.inFlight++;
 		server.maxInFlight = Math.max(server.maxInFlight, server.inFlight);
 		await new Promise((resolve) => setTimeout(resolve, 400));
@@ -22,8 +19,7 @@ vi.mock("./demo-server", async (importOriginal) => ({
 		if (serverFails) throw new Error("The demo server is unavailable.");
 		server.stored.push(text);
 		return { text, savedAt: Date.now() };
-	}),
-}));
+	});
 
 const tasks = [
 	{ id: "T-1", title: "Sample dashboard" },
@@ -47,7 +43,7 @@ beforeEach(() => {
 	server.inFlight = 0;
 	server.maxInFlight = 0;
 	server.stored = [];
-	vi.mocked(saveNote).mockClear();
+	save.mockClear();
 	fetchMock.mockReset().mockImplementation(async () => Response.json(tasks));
 	vi.stubGlobal("fetch", fetchMock);
 });
@@ -81,7 +77,7 @@ const statusOf = (heading: string) =>
 const searchStatus = () => statusOf("Debounce a value: search");
 const saveStatus = () => statusOf("Throttle a mutation: autosave");
 // Every text sent to the server, including saves that fail.
-const sentTexts = () => vi.mocked(saveNote).mock.calls.map(([text]) => text);
+const sentTexts = () => save.mock.calls.map(([text]) => text);
 const discardButton = () =>
 	screen.getByRole("button", { name: "Discard waiting save" });
 const resultTitles = () =>

@@ -56,10 +56,11 @@ const skipped = (name) => name === ".DS_Store" || name.startsWith(".env");
 const exampleFolders = ["src/routes/examples", "public/demo"];
 const exampleLineFiles = [
 	"src/routes.ts",
+	"src/services.ts",
 	"src/lib/app/nav.ts",
 	"src/routes/home/home.route.tsx",
 ];
-const exampleLine = /\/examples\/|exampleRoutes/;
+const exampleLine = /\/examples\/|exampleRoutes|demoApi|createDemo/;
 const exampleSectionFiles = [
 	"README.md",
 	"docs/code-organization.md",

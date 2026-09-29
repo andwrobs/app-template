@@ -3,7 +3,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 import { typingState, useSearchDraft } from "~/lib/url-state/useSearchDraft";
-import { searchQuery } from "../../demo-server";
+import { searchQuery } from "../../task-search.query";
 import type { DebouncedSearchProps } from "./DebouncedSearchView";
 
 export const searchWait = 400;

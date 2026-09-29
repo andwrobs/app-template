@@ -124,6 +124,10 @@ it("leaves out the examples and every reference to them", () => {
 			/examples\/|exampleRoutes/.test(readFileSync(file, "utf8")),
 		);
 	expect(references).toEqual([]);
+	// The composition root keeps its comment and builds nothing.
+	expect(read(app, "src/services.ts")).not.toMatch(
+		/^(import|export const|const)/m,
+	);
 	expect(JSON.parse(read(app, "package.json")).name).toBe("plain");
 
 	const biome = spawnSync(

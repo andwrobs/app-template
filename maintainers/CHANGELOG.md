@@ -7,7 +7,11 @@
 - `SidebarLayout`, a one-line alternative to the header layout, sharing
   `lib/app/nav.ts`.
 - `lib/env` validates `VITE_` settings for `dev` and `build`; apps get `.env.example`.
-- `lib/api` (`fetchJson`, `api`, `ApiError`), used by the examples.
+- `lib/api` (`fetchJson`, `createApiClient`, `ApiError`), used by the examples.
+- Layered services: `createXService` factories, one composition root in
+  `src/services.ts`, and Biome rules that keep services free of React, router,
+  TanStack, Zustand, and instances. The examples reach fixtures and fake servers
+  through services.
 - The `new-route` app skill.
 - `maintainers/check-upstream.mjs` and a monthly scheduled run.
 
