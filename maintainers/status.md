@@ -1,8 +1,9 @@
 # Status
 
 Updated 2026-09-29. `main` includes the app foundations, the encapsulation audit,
-ARCH-01/02/03, and the service layering, fast-forwarded from `encapsulation-refactors`.
-The latest release tag is `v0.1.0`; these changes are unreleased. Nothing is pushed.
+ARCH-01/02/03, the service layering, and the services and state docs, and is pushed to
+`origin` (`andwrobs/app-template`, private). The `v0.1.0` tag and other branches
+aren't pushed. The latest release tag is `v0.1.0`; these changes are unreleased.
 
 ## Verified state
 
@@ -28,7 +29,7 @@ monthly upstream report.
 
 Not verified: reduced motion in a browser (QUALITY-01), screen-reader speech, the
 scheduled report's first run (due 2026-10-01), Node 24 or npm 11, a real static host,
-and hosted CI (not pushed).
+and hosted CI (pushed; its runs haven't been checked).
 
 ## Encapsulation audit verification — 2026-09-28
 
@@ -128,10 +129,30 @@ rules stay as they were. Node 23.7.0/npm 10.9.2.
   autosave ("All changes saved"), and form submit ("Saved REQ-A58988") all work;
   no console errors. Not checked at 390×844; layout didn't change.
 
+## Services and state docs — 2026-09-29
+
+The owner asked for parity with their service and state architecture doc and skill.
+`docs/services-and-state.md` now covers every section of both: a layer diagram and
+a request sequence diagram (Mermaid, both rendered with Mermaid 11 before commit),
+services, the composition root, a state ownership table extended to Router, Form,
+Table, and Pacer, stores, cross-store coordination, per-layer testing, exceptions,
+and the review checklist, with the skill's six templates as examples. The layer
+rules moved out of code organization, and docs that restated them now link there.
+
+Kept where the template differs: views reach services through feature hooks, query
+files export `queryOptions` rather than hooks so loaders share them, only stores with
+user data need `initialState` and `reset`, and tests swap services with `vi.spyOn`
+rather than module mocks. `lib/theme` is a listed exception, with a comment.
+
+- `npm test`: exit 0; 64 tests in 19 files. Keep apps clean: no matches. Links: 70
+  checked, only the dated audit's known one missing. A `--no-examples` app gets the
+  doc without its Examples section. App-inherited docs: 4,380 → 5,730 words.
+
 ## Completed
 
 | Work | Result | Evidence |
 | --- | --- | --- |
+| Services and state docs | Parity with the owner's architecture doc and skill in `docs/services-and-state.md` | Section above |
 | Service layering | Layered services with one composition root, Biome rules, docs, and new-route steps; examples migrated | Section above |
 | ARCH-01, ARCH-02, ARCH-03 | `ProjectRequestForm`, `TaskTable`, and connected Pacer entries own their workflows; routes compose. Autosave discard drops edits queued behind a running save, Save now can't overlap a save, and failed saves recover. | 21 form/table/URL tests unchanged, 10 Pacer tests (2 new), refactor section above |
 | Encapsulation audit and guidance | [Audit](reports/encapsulation-2026-09-28.md), repository ownership rules, and new-route skill updated. Application refactors remain ARCH-01/02/03. | Verification above |

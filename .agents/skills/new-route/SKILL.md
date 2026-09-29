@@ -39,7 +39,7 @@ Import other features only through `src/lib`, never from another route's folder.
    workflow need no artificial layer. In the minimal example below, a direct query
    subscription is sufficient.
 
-   **Data** follows the [layers](../../../docs/code-organization.md#layers). Put the
+   **Data** follows [services and state](../../../docs/services-and-state.md). Put the
    schema and types in `<thing>.ts`. In `<thing>.service.ts`, export `ThingsService`
    and `createThingsService({ api }: Deps)`, which calls
    `api.request(path, schema, { signal })`. In `src/services.ts`, build it once and

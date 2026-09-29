@@ -17,6 +17,8 @@ export const themeScript = `(() => {
 	} catch {}
 })();`;
 
+// A listed exception to services owning I/O: this only presents and persists the
+// store's own state, and it must match the head script.
 function applyTheme(theme: Theme) {
 	document.documentElement.classList.toggle("dark", theme === "dark");
 	document.documentElement.style.colorScheme = theme;

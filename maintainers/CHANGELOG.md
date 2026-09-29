@@ -12,6 +12,9 @@
   `src/services.ts`, and Biome rules that keep services free of React, router,
   TanStack, Zustand, and instances. The examples reach fixtures and fake servers
   through services.
+- `docs/services-and-state.md`: layer and request diagrams, service and composition
+  root rules, a state ownership table, store and cross-store rules with examples,
+  per-layer testing, exceptions, and a review checklist.
 - The `new-route` app skill.
 - `maintainers/check-upstream.mjs` and a monthly scheduled run.
 

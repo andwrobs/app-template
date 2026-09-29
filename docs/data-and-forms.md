@@ -2,17 +2,18 @@
 
 ## Router and Query
 
-These libraries remain the sources of truth. A feature hook coordinates them behind
-the [behavior boundary](code-organization.md#behavior-ownership); it doesn't create a
-second cache or copy their state. Views call feature actions and render their result.
+These libraries remain the sources of truth (see
+[state ownership](services-and-state.md#state-ownership)). A feature hook coordinates
+them behind the [behavior boundary](code-organization.md#behavior-ownership); it
+doesn't create a second cache or copy their state. Views call feature actions and
+render their result.
 
 Router owns URL state, navigation timing, route boundaries, and client loaders and
 actions. Query owns remote state: caching, freshness, deduplication, and invalidation.
 
 - Define query options beside their owner and use them in both `clientLoader` and
   `useQuery`, through the one client in `src/lib/query/client.ts`. Tests use their
-  own caches. Each `queryFn` calls a service instance and passes Query's `signal`;
-  services know nothing about Query.
+  own caches. Each `queryFn` calls a service instance with Query's `signal`.
 - `fetchQuery` in a loader reuses fresh data and waits for stale data.
   `ensureQueryData` returns stale data immediately, so use it only when that's what
   you want. `prefetchQuery` is for speculative warming, and its errors don't reach
@@ -24,7 +25,6 @@ actions. Query owns remote state: caching, freshness, deduplication, and invalid
   them.
 - With auth, put the user scope in query keys, and cancel and clear those queries when
   the identity changes. Reset stores that hold user data at the same time.
-- Don't copy remote data into Zustand, loader return values, or effects.
 
 ## Forms
 
@@ -80,8 +80,8 @@ Its public actions must describe what they actually guarantee, including the
 difference between pending and in-flight work. Test a queued edit during a running
 save as well as a timer waiting while idle; the two cases can behave differently.
 
-Use Router's NavLink for navigation state, Zustand for shared client state (the theme
-in `lib/theme`), and local state for everything else.
+Use Router's NavLink for navigation state; the
+[ownership table](services-and-state.md#state-ownership) places everything else.
 
 ## Examples
 

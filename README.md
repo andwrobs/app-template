@@ -33,7 +33,8 @@ writes them into `src/lib/ui`. Review the code and any new dependencies, because
 registry content isn't pinned.
 
 Docs: [code organization](docs/code-organization.md),
-[data and forms](docs/data-and-forms.md), [testing](docs/testing.md).
+[services and state](docs/services-and-state.md), [data and forms](docs/data-and-forms.md),
+[testing](docs/testing.md).
 
 ## Examples
 

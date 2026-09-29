@@ -65,6 +65,7 @@ const exampleSectionFiles = [
 	"README.md",
 	"docs/code-organization.md",
 	"docs/data-and-forms.md",
+	"docs/services-and-state.md",
 ];
 
 const usage = `Usage: node bin/create-react-spa.mjs <directory> [options]

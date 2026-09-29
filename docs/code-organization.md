@@ -53,75 +53,12 @@ src/
 | Visual primitive or pattern with no app knowledge | `lib/ui` |
 | Wraps every route (providers, layout, navigation) | `lib/app` |
 | Binds Form, Table, Query, or the router to UI, shared across routes | A capability such as `lib/form`, never `lib/ui` |
-| A service instance | `src/services.ts`; the factory stays with its domain |
+| A service instance | `src/services.ts`; the factory stays with its domain ([services and state](services-and-state.md)) |
 
 Tests sit next to the code they test. Keep a route's `lib/` flat until some files form
 a subsystem, then group them by concept (`lib/results/query.ts`), not by type. No
 `queries`, `stores`, `types`, `utils`, `hooks`, or `components` folders inside any
 `lib`. A route's `components/` folder is the only components folder.
-
-## Layers
-
-Dependencies point one way. Nothing imports a layer above it.
-
-```text
-components   route modules, connected components, views
-state        feature hooks, stores, query options
-services     built once in src/services.ts
-clients      lib/api, settings
-```
-
-Views and connected components reach services only through the state layer. Route
-loaders and actions use query options or a service.
-
-A service receives its dependencies when it's created and returns an object typed by
-an explicit interface. It holds I/O and domain decisions, never UI or client state.
-
-```ts
-// tasks.service.ts
-export interface TasksService {
-	list(options?: { signal?: AbortSignal }): Promise<Task[]>;
-}
-
-type Deps = { api: ApiClient };
-
-export function createTasksService({ api }: Deps): TasksService {
-	async function list({ signal }: { signal?: AbortSignal } = {}) {
-		return api.request("tasks.json", z.array(taskSchema), { signal });
-	}
-
-	return { list };
-}
-```
-
-- Name the file `<thing>.service.ts`, the interface `XService`, and the factory
-  `createXService`. A stand-in for the same interface gets its own factory, such as
-  `createDemoXService`.
-- Factories, not classes: without `this`, methods pass safely as callbacks
-  (`mutationFn: xService.save`). Use a class only when something requires one
-  (`instanceof`, a `dispose()` lifecycle, many instances on a hot path), and say why
-  in a comment at the definition.
-- One `Deps` object, destructured in the signature. It lists interfaces (`ApiClient`,
-  `LedgerService`), never factories or imported instances.
-- Stateless, not pure: I/O is fine; state kept between calls isn't.
-- The file holds the interface, `Deps`, and the factory. Helpers sit inside the
-  factory above the public functions, and `return { ... }` lists the public API.
-  Schemas, types, and pure helpers that others use go in the domain module beside it
-  (`tasks.ts`).
-- Services import no React, router, TanStack, Zustand, UI, routes, or service
-  instances (Biome enforces this). No default exports.
-
-`src/services.ts` is the composition root. It builds every service once, in
-dependency order, and exports the instances; outside tests, no other module imports a
-factory (Biome enforces this). Swap an implementation (a fake server, fixtures, a
-demo mode) there, never in consumers.
-
-```ts
-// src/services.ts
-const api = createApiClient({ baseUrl: env.VITE_API_URL });
-export const ledgerService = createLedgerService({ api });
-export const billingService = createBillingService({ api, ledger: ledgerService });
-```
 
 ## Behavior ownership
 
@@ -144,15 +81,11 @@ when it creates that boundary, not merely when it shortens a file.
 - **Feature hooks** own React subscriptions, lifecycle, and integration between the
   existing libraries. Keep pure decisions in nearby functions or a reducer when
   transitions become complex. A state-machine library is optional, not a default.
-- **Services** follow the [layers](#layers). Group operations by domain; a service
-  isn't a bucket for unrelated logic.
-- **Stores** own genuinely shared client state. Actions set state or call a service;
-  decisions stay in services and remote data stays in Query. Components subscribe
-  with selectors. Stores never call each other's actions or subscribe to each other;
-  a feature owner named for the user's intent coordinates them. Read another store
-  with `getState()` only inside an action or handler, never while rendering. A store
-  is global unless several independent instances must exist at once (one per open
-  editor); then scope it with context and say why. Don't move local workflows into a
+- **Services** perform I/O and domain decisions under the
+  [service rules](services-and-state.md#services). Group operations by domain; a
+  service isn't a bucket for unrelated logic.
+- **Stores** own genuinely shared client state under the
+  [store rules](services-and-state.md#stores). Don't move local workflows into a
   global store just to empty a component. Preserve Query, Router, Form, Table, and
   Pacer ownership described in [data and forms](data-and-forms.md).
 
@@ -199,8 +132,7 @@ invalid combinations. Independent facts such as saving and having a queued edit 
 coexist, so don't force them into an artificial single status.
 
 When reviewing a behavior change, identify its owner, public actions, state source,
-and lifecycle policy. Check that no layer reaches up, remote data stays out of
-stores, and store actions hold no decisions. Follow an action from the view to its effect: a consumer that
+and lifecycle policy, then run the [layer review](services-and-state.md#review). Follow an action from the view to its effect: a consumer that
 must know the internal sequence signals a leaking boundary. Test observable
 transitions, failures, cancellation, and navigation where relevant; hook counts,
 file lengths, and naming checks don't prove encapsulation.
