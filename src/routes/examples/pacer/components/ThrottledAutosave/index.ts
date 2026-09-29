@@ -1,2 +1,1 @@
-export * from "./ThrottledAutosave";
-export * from "./useThrottledAutosave";
+export { ThrottledAutosave } from "./ThrottledAutosave";

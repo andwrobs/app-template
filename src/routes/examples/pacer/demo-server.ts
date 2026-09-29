@@ -28,8 +28,9 @@ export function searchQuery(term: string) {
 	});
 }
 
-export async function saveNote(text: string) {
+export async function saveNote(text: string, serverFails: boolean) {
 	await wait(400);
+	if (serverFails) throw new Error("The demo server is unavailable.");
 	return { text, savedAt: Date.now() };
 }
 

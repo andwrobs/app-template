@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 import { typingState, useSearchDraft } from "~/lib/url-state/useSearchDraft";
 import { searchQuery } from "../../demo-server";
-import type { DebouncedSearchProps } from "./DebouncedSearch";
+import type { DebouncedSearchProps } from "./DebouncedSearchView";
 
 export const searchWait = 400;
 

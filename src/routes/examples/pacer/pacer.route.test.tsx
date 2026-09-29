@@ -1,20 +1,26 @@
 import { act, fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { renderRoute } from "../../../../test-utils/render-route";
-import { searchWait } from "./components/DebouncedSearch";
-import { saveInterval } from "./components/ThrottledAutosave";
+import { searchWait } from "./components/DebouncedSearch/useDebouncedSearch";
+import { saveInterval } from "./components/ThrottledAutosave/useThrottledAutosave";
 import { saveNote, searchLatency } from "./demo-server";
 import PacerRoute, { meta } from "./pacer.route";
 
-const saves = vi.hoisted(() => ({ inFlight: 0, maxInFlight: 0 }));
+const server = vi.hoisted(() => ({
+	inFlight: 0,
+	maxInFlight: 0,
+	stored: [] as string[],
+}));
 
 vi.mock("./demo-server", async (importOriginal) => ({
 	...(await importOriginal<typeof import("./demo-server")>()),
-	saveNote: vi.fn(async (text: string) => {
-		saves.inFlight++;
-		saves.maxInFlight = Math.max(saves.maxInFlight, saves.inFlight);
+	saveNote: vi.fn(async (text: string, serverFails: boolean) => {
+		server.inFlight++;
+		server.maxInFlight = Math.max(server.maxInFlight, server.inFlight);
 		await new Promise((resolve) => setTimeout(resolve, 400));
-		saves.inFlight--;
+		server.inFlight--;
+		if (serverFails) throw new Error("The demo server is unavailable.");
+		server.stored.push(text);
 		return { text, savedAt: Date.now() };
 	}),
 }));
@@ -38,8 +44,9 @@ beforeEach(() => {
 			"Date",
 		],
 	});
-	saves.inFlight = 0;
-	saves.maxInFlight = 0;
+	server.inFlight = 0;
+	server.maxInFlight = 0;
+	server.stored = [];
 	vi.mocked(saveNote).mockClear();
 	fetchMock.mockReset().mockImplementation(async () => Response.json(tasks));
 	vi.stubGlobal("fetch", fetchMock);
@@ -63,6 +70,8 @@ function renderPacer(initialEntries = ["/examples/pacer"]) {
 const elapse = (ms: number) => act(() => vi.advanceTimersByTimeAsync(ms));
 // Query delivers results on a zero-delay timer after the fetch resolves.
 const answer = (term: string) => elapse(searchLatency(term) + 1);
+// The mock server answers after 400 ms, and Query reports it the same way.
+const saveSettles = () => elapse(401);
 const location = () => screen.getByLabelText("Test location");
 const searchBox = () =>
 	screen.getByRole("searchbox", { name: "Search sample tasks" });
@@ -71,8 +80,10 @@ const statusOf = (heading: string) =>
 	screen.getByRole("region", { name: heading }).querySelector("[role=status]");
 const searchStatus = () => statusOf("Debounce a value: search");
 const saveStatus = () => statusOf("Throttle a mutation: autosave");
-// Query passes the mutation function a second, context argument.
-const savedTexts = () => vi.mocked(saveNote).mock.calls.map(([text]) => text);
+// Every text sent to the server, including saves that fail.
+const sentTexts = () => vi.mocked(saveNote).mock.calls.map(([text]) => text);
+const discardButton = () =>
+	screen.getByRole("button", { name: "Discard waiting save" });
 const resultTitles = () =>
 	screen
 		.queryAllByRole("listitem")
@@ -179,10 +190,10 @@ it("saves at most once a second, one at a time, and saves the last edit", async 
 		await elapse(150);
 	}
 	await elapse(saveInterval * 3);
-	const calls = savedTexts();
+	const calls = sentTexts();
 	expect(calls.at(-1)).toBe("throttled");
 	expect(calls.length).toBeLessThanOrEqual(3);
-	expect(saves.maxInFlight).toBe(1);
+	expect(server.maxInFlight).toBe(1);
 	expect(saveStatus()).toHaveTextContent(/^All changes saved at/);
 });
 
@@ -194,16 +205,14 @@ it("saves now, discards a waiting save, and saves the last edit on unmount", asy
 	expect(saveStatus()).toHaveTextContent("Save waiting…");
 	await user.click(screen.getByRole("button", { name: "Save now" }));
 	await elapse(400);
-	expect(savedTexts()).toEqual(["a", "ab"]);
+	expect(sentTexts()).toEqual(["a", "ab"]);
 	expect(saveStatus()).toHaveTextContent(/^All changes saved at/);
 
 	await user.type(notes(), "c");
-	await user.click(
-		screen.getByRole("button", { name: "Discard waiting save" }),
-	);
+	await user.click(discardButton());
 	await elapse(saveInterval * 2);
 	expect(saveStatus()).toHaveTextContent("Unsaved changes.");
-	expect(savedTexts()).toEqual(["a", "ab"]);
+	expect(sentTexts()).toEqual(["a", "ab"]);
 
 	// After a quiet second the next edit saves at once; the one after it waits.
 	await user.type(notes(), "d");
@@ -211,7 +220,72 @@ it("saves now, discards a waiting save, and saves the last edit on unmount", asy
 	await user.type(notes(), "e");
 	expect(saveStatus()).toHaveTextContent("Save waiting…");
 	await user.click(screen.getByRole("button", { name: "Test back" }));
-	expect(savedTexts()).toEqual(["a", "ab", "abcd", "abcde"]);
+	expect(sentTexts()).toEqual(["a", "ab", "abcd", "abcde"]);
 	await elapse(saveInterval * 2);
-	expect(savedTexts()).toEqual(["a", "ab", "abcd", "abcde"]);
+	expect(sentTexts()).toEqual(["a", "ab", "abcd", "abcde"]);
+});
+
+it("discards an edit queued behind a running save", async () => {
+	const { user } = renderPacer();
+	// "a" saves at once; "b" arrives while it runs and queues behind it.
+	await user.type(notes(), "a");
+	await user.type(notes(), "b");
+	expect(saveStatus()).toHaveTextContent("Saving… Newer edits are waiting.");
+	expect(screen.getByRole("button", { name: "Save now" })).toBeDisabled();
+	await user.click(discardButton());
+	expect(saveStatus()).toHaveTextContent(/^Saving…$/);
+	await elapse(saveInterval * 3);
+	expect(sentTexts()).toEqual(["a"]);
+	expect(server.stored).toEqual(["a"]);
+	expect(saveStatus()).toHaveTextContent("Unsaved changes.");
+	expect(discardButton()).toBeDisabled();
+
+	// The same holds behind a save that waited for the interval.
+	await user.type(notes(), "c");
+	await saveSettles();
+	await user.type(notes(), "d");
+	expect(saveStatus()).toHaveTextContent("Save waiting…");
+	await elapse(saveInterval);
+	await user.type(notes(), "e");
+	expect(saveStatus()).toHaveTextContent("Saving… Newer edits are waiting.");
+	expect(screen.getByRole("button", { name: "Save now" })).toBeDisabled();
+	await user.click(discardButton());
+	await elapse(saveInterval * 3);
+	expect(sentTexts()).toEqual(["a", "abc", "abcd"]);
+	expect(server.stored).toEqual(["a", "abc", "abcd"]);
+	expect(server.maxInFlight).toBe(1);
+	expect(notes()).toHaveValue("abcde");
+	expect(saveStatus()).toHaveTextContent("Unsaved changes.");
+});
+
+it("keeps the note when saves fail, and saves it on retry", async () => {
+	const { user } = renderPacer();
+	const failing = () =>
+		screen.getByRole("checkbox", { name: "Simulate a failing server" });
+	await user.click(failing());
+	await user.type(notes(), "a");
+	await saveSettles();
+	expect(screen.getByRole("alert")).toHaveTextContent(
+		"The demo server is unavailable.",
+	);
+	expect(saveStatus()).toHaveTextContent("Unsaved changes.");
+
+	// Later edits keep saving on schedule while the server fails.
+	await user.type(notes(), "b");
+	expect(saveStatus()).toHaveTextContent("Save waiting…");
+	await elapse(saveInterval);
+	await saveSettles();
+	expect(sentTexts()).toEqual(["a", "ab"]);
+	expect(screen.getByRole("alert")).toBeInTheDocument();
+
+	await user.click(failing());
+	await user.click(screen.getByRole("button", { name: "Try again" }));
+	expect(saveStatus()).toHaveTextContent(/^Saving…$/);
+	expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+	expect(notes()).toHaveFocus();
+	await saveSettles();
+	expect(sentTexts()).toEqual(["a", "ab", "ab"]);
+	expect(server.stored).toEqual(["ab"]);
+	expect(saveStatus()).toHaveTextContent(/^All changes saved at/);
+	expect(screen.getByText("2 edits · 1 save")).toBeInTheDocument();
 });

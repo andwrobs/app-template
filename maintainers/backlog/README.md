@@ -13,9 +13,6 @@ pickup. Check shorthands:
 
 | Key | Outcome | Priority / size | Depends on |
 | --- | --- | --- | --- |
-| [ARCH-01](ui-and-examples.md#arch-01-encapsulate-the-project-request-workflow) | Encapsulate form submission/reset | P1 / S | none |
-| [ARCH-02](ui-and-examples.md#arch-02-encapsulate-task-table-behavior) | Encapsulate table state adaptation | P1 / M | none |
-| [ARCH-03](ui-and-examples.md#arch-03-close-pacer-boundaries-and-verify-cancellation) | Close Pacer boundaries and verify discard | P1 / M | none |
 | [DEMO-04](ui-and-examples.md#demo-04-query-mutations-and-route-integration) | Query mutation and invalidation example | P2 / M | none |
 | [QUALITY-01](maintenance-and-distribution.md#quality-01-browser-and-static-host-proof) | Browser, accessibility, and deep-link checks in CI | P1 / M | none |
 | [MAINT-02](maintenance-and-distribution.md#maint-02-remaining-dependencies-and-utilities) | Review remaining dependencies and utilities | P2 / S | none |

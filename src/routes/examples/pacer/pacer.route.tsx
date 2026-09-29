@@ -1,21 +1,13 @@
 import { pageTitle } from "~/lib/meta/title";
 import type { Route } from "./+types/pacer.route";
-import {
-	DebouncedSearch,
-	useDebouncedSearch,
-} from "./components/DebouncedSearch";
-import {
-	ThrottledAutosave,
-	useThrottledAutosave,
-} from "./components/ThrottledAutosave";
+import { DebouncedSearch } from "./components/DebouncedSearch";
+import { ThrottledAutosave } from "./components/ThrottledAutosave";
 
 export const meta: Route.MetaFunction = () => [
 	{ title: pageTitle("Pacer example") },
 ];
 
 export default function PacerRoute() {
-	const searchProps = useDebouncedSearch();
-	const autosaveProps = useThrottledAutosave();
 	return (
 		<main className="mx-auto w-full max-w-5xl space-y-10 px-4 py-12 sm:px-6">
 			<div className="space-y-2">
@@ -31,8 +23,8 @@ export default function PacerRoute() {
 					so read the release notes and rerun these tests before upgrading.
 				</p>
 			</div>
-			<DebouncedSearch {...searchProps} />
-			<ThrottledAutosave {...autosaveProps} />
+			<DebouncedSearch />
+			<ThrottledAutosave />
 		</main>
 	);
 }

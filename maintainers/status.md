@@ -1,7 +1,8 @@
 # Status
 
 Updated 2026-09-28. `main` includes the app foundations and encapsulation audit,
-fast-forwarded from `app-foundations`. The latest release tag is `v0.1.0`; these
+fast-forwarded from `app-foundations`. Branch `encapsulation-refactors` holds ARCH-01,
+02, and 03, staged but not committed. The latest release tag is `v0.1.0`; these
 changes are unreleased. Nothing is pushed.
 
 ## Verified state
@@ -47,10 +48,53 @@ instructions were checked after the interrupted write and remain empty/unchanged
   documentation-only change. No new behavior tests were added or failure scenarios
   reproduced; the audit distinguishes source findings from coverage gaps.
 
+## Encapsulation refactors — 2026-09-28
+
+ARCH-01/02/03 on `encapsulation-refactors`, Node 23.7.0/npm 10.9.2.
+
+- Form: `ProjectRequestForm` (connected entry, view, `useProjectRequestForm`) owns the
+  scenario, mutation, parse-save-clear, and `resetRequest`. The route only composes.
+- Table: `TaskTable` owns Query/URL/Table wiring and every Aria translation (page
+  selection merge, column visibility, sort descriptor, status key, search draft).
+  The view binds Aria callbacks straight to named actions and renders with the
+  standalone `FlexRender`. URL helpers and columns moved into the feature folder.
+- Pacer: connected `DebouncedSearch` and `ThrottledAutosave` entries; barrels export
+  only them; tests import timing constants from the hooks.
+- Autosave contract, reproduced first with a scratch test against the old code:
+  Discard was disabled with an edit queued behind a leading save, which then saved;
+  with a trailing save running, Discard left the queued edit to save; Save now
+  started a second concurrent save (`maxInFlight` 2) and saved the text twice. Fix:
+  each request gets a revision; waiting is derived from requested versus started
+  (`save.variables`) or discarded; the save skips discarded revisions; Save now is
+  enabled only while nothing saves. Added a failing-server checkbox and Try again,
+  which returns focus to the note.
+- `npm test`: exit 0; Biome (146 files), typegen + tsc, 62 tests in 18 files, build
+  (the large components-chunk warning; jsdom chart-size warnings as before).
+  New: discard behind leading and trailing saves; failure, continued failure, retry.
+  Pacer file passed 3 consecutive runs. Keep apps clean: no matches.
+  `git diff --check`: passed.
+- Relative links: 65 checked, 1 missing: the dated audit links the old
+  `table/table-url-state.ts`, now `table/components/TaskTable/`. Left as a record.
+- Rendered, dev server, 1440×900: form failure keeps answers, Reset clears them,
+  pending disables Submit and Reset, success trims and clears; table deep link,
+  typing keeps focus and replaces history, empty-state recovery, keyboard selection
+  kept across Next and Back, Columns menu hides Priority and returns focus; autosave
+  with real timers shows "Saving… Newer edits are waiting.", Discard leaves 2 saves
+  and "Unsaved changes." after 3 s, failure alert, retry saves; debounced search
+  unchanged. 390×844: no page overflow on the three routes; failure state renders.
+  No console or server errors.
+- Not verified: at 390×844 (touch emulation) pointer clicks didn't toggle either the
+  new checkbox or the form's existing one; keyboard did. Automation or a real
+  `lib/ui` touch issue, so it belongs to QUALITY-01. From Pacer's source, not
+  reproduced: a save longer than the 1 s interval stops the throttler waiting and
+  can start a second save. The search's Try again may drop focus the same way the
+  autosave's did (not checked).
+
 ## Completed
 
 | Work | Result | Evidence |
 | --- | --- | --- |
+| ARCH-01, ARCH-02, ARCH-03 | `ProjectRequestForm`, `TaskTable`, and connected Pacer entries own their workflows; routes compose. Autosave discard drops edits queued behind a running save, Save now can't overlap a save, and failed saves recover. | 21 form/table/URL tests unchanged, 10 Pacer tests (2 new), refactor section above |
 | Encapsulation audit and guidance | [Audit](reports/encapsulation-2026-09-28.md), repository ownership rules, and new-route skill updated. Application refactors remain ARCH-01/02/03. | Verification above |
 | Intake audit fixes | Every audit finding resolved except the MAINT-02 row (Zustand mock, Lefthook) | Source inspection and `npm test`, 2026-09-26 |
 | DEMO-01 Form | `/examples/form`: text, email, select, textarea, and checkbox fields; Zod schema; errors after blur or submit; a Query mutation owns submission; duplicate-submit guard; recoverable failure; reset. `lib/form` provides `useAppForm` with Aria-wired fields, `Form`, and `SubmitButton`. | 4 route tests, checks above |
@@ -71,12 +115,12 @@ None.
 
 ## Next
 
-1. Implement ARCH-01 (Form), ARCH-02 (Table), and ARCH-03 (Pacer) from the
-   encapsulation audit, starting with the form as the reference boundary.
+1. Review and commit `encapsulation-refactors`, then merge it into `main`.
 2. Prepare `v0.2.0` when requested (see maintenance.md, Releases). The scheduled
    upstream report can now use the script on `main`.
 3. DIST-03 once the owner says go.
-4. QUALITY-01, now including the not-found URL, route focus, and the sidebar layout.
+4. QUALITY-01, now including the not-found URL, route focus, the sidebar layout, and
+   checkbox pointer input at phone width.
 5. MAINT-02, starting from the upstream report: Vitest 5 (fixes the advisory),
    TypeScript 7, jsdom 30, and the rest.
 6. DEMO-04, then MAINT-03 and API-01.

@@ -1,2 +1,1 @@
-export * from "./DebouncedSearch";
-export * from "./useDebouncedSearch";
+export { DebouncedSearch } from "./DebouncedSearch";

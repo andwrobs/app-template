@@ -68,8 +68,10 @@ Pacer is pinned at 0.23.0. Use its React adapter, not custom timer hooks. Cancel
 pending work on unmount, treat cancel and flush differently, handle IME composition,
 and never let a stale search overwrite a newer one. Debounce a value by delaying its
 URL write; pace a mutation with an async throttler and let Query own the call. For
-autosave, flush on unmount so the last edit saves: in 0.23.0, `cancel()` can't stop an
-edit queued behind a running save.
+autosave, flush on unmount so the last edit saves. In 0.23.0, an edit made during a
+running save waits where `cancel()` can't reach it and `isPending` doesn't show it, and
+`flush()` during a trailing save starts a second save. The example numbers each save
+request, skips discarded ones, and allows Save now only while nothing is saving.
 
 Keep draft, scheduling, cancellation, flushing, and recovery under one feature owner.
 Its public actions must describe what they actually guarantee, including the
@@ -87,7 +89,8 @@ in `lib/theme`), and local state for everything else.
   recoverable failure, and reset.
 - `/examples/table`: sort, search, filter, and paging in the URL, selection across
   pages, and column visibility.
-- `/examples/pacer`: a debounced URL search and a throttled autosave.
+- `/examples/pacer`: a debounced URL search, and a throttled autosave with discard
+  and failure recovery.
 - `/examples/components`: every `lib/ui` component, in light and dark.
 
 ## References

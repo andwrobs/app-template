@@ -3,7 +3,7 @@ import type {
 	PaginationState,
 	SortingState,
 } from "@tanstack/react-table";
-import { type TaskStatus, taskStatuses } from "./tasks.query";
+import { type TaskStatus, taskStatuses } from "../../tasks.query";
 
 export const pageSizes = [10, 20, 50] as const;
 
