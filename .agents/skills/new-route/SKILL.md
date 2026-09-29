@@ -1,6 +1,6 @@
 ---
 name: new-route
-description: Add a page or feature route to this app in its house style (route folder, title, Query-backed clientLoader, view-plus-hook components, tests beside the code, routes.ts, and nav). Use whenever you add a screen; use react-router for other route work.
+description: Add a page or feature route to this app in its house style (route folder, title, Query-backed clientLoader, encapsulated features with thin connected components, tests beside the code, routes.ts, and nav). Use whenever you add a screen; use react-router for other route work.
 ---
 
 # New route
@@ -17,17 +17,26 @@ src/routes/<feature>/
   <feature>.route.test.tsx
   <thing>.query.ts           # queryOptions and the Zod schema, if it loads data
   components/<Name>/         # only for parts worth splitting out
-    <Name>.tsx               # view: renders from props
-    use<Name>.ts             # hook: Query, URL state, stores
+    <Name>.tsx               # connected entry: binds private hook to view
+    <Name>View.tsx            # renders state, emits intent
+    use<Name>.ts             # owns workflow and library integration
     <Name>.test.tsx
-    index.ts
+    index.ts                 # exports the connected entry, not its internals
 ```
 
 Import other features only through `src/lib`, never from another route's folder.
 
 ## Steps
 
-1. **Data.** In `<thing>.query.ts`, export `queryOptions` whose `queryFn` calls
+1. **Ownership and data.** Name the feature owner and its public actions before
+   adding behavior. Keep workflow transitions, URL/library adaptation, and side
+   effects in its private hook or domain module. Use a thin connected entry point
+   for a self-contained feature; routes compose these instead of assembling each
+   child's hooks. Static pages need no controller, and simple subscriptions with no
+   workflow need no artificial layer. In the minimal example below, a direct query
+   subscription is sufficient.
+
+   **Data.** In `<thing>.query.ts`, export `queryOptions` whose `queryFn` calls
    `api(path, schema, { signal })` from `lib/api` (or `fetchJson` for a full URL).
 2. **Route module.**
 
@@ -64,12 +73,16 @@ Import other features only through `src/lib`, never from another route's folder.
    `src/lib/app/nav.ts`.
 5. **UI** comes from `~/lib/ui`. Forms use `useAppForm` from `lib/form`; filters,
    sort, and paging live in search params, and a search box that writes the URL uses
-   `useSearchDraft`.
+   `useSearchDraft` inside the owning feature. Keep schema/defaults colocated.
+   Views call actions such as `resetRequest` instead of sequencing form and mutation
+   resets. Stores are for shared client state, not a default extraction target.
 6. **Tests** sit beside the code. `renderRoute` from `test-utils/render-route.tsx`
    takes route objects (`{ path, Component, loader: clientLoader, meta,
    ErrorBoundary }`); pass the shared `queryClient` when the loader uses it, and
    clear it in `beforeEach`. Stub `fetch`, then assert the title, the data, the empty
    state, and the failure. The shared client retries once, so give failure assertions
-   `{ timeout: 3000 }`.
+   `{ timeout: 3000 }`. For workflows, assert observable transitions and relevant
+   recovery/cancellation/navigation behavior. Check that JSX handlers don't contain
+   business transitions and consumers don't need private setters or effect order.
 7. **Check** with `npm test`, then a rendered check at 1440×900 and 390×844 with the
    keyboard, including a direct load of the new URL.

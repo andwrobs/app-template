@@ -2,6 +2,10 @@
 
 ## Router and Query
 
+These libraries remain the sources of truth. A feature hook coordinates them behind
+the [behavior boundary](code-organization.md#behavior-ownership); it doesn't create a
+second cache or copy their state. Views call feature actions and render their result.
+
 Router owns URL state, navigation timing, route boundaries, and client loaders and
 actions. Query owns remote state: caching, freshness, deduplication, and invalidation.
 
@@ -39,6 +43,9 @@ validation, and submission.
   when route semantics matter. Block duplicate submits, show failures, and invalidate
   the affected queries on success. Router revalidation doesn't invalidate fresh Query
   data.
+- Keep parse-submit-success-reset and explicit reset/retry behavior in the form
+  feature's hook. Field layout belongs in its view. Keep the schema and defaults
+  colocated with the form domain; a schema beside its consumer isn't a design flaw.
 
 ## Tables and rate control
 
@@ -53,12 +60,21 @@ and merge its changes by row ID. Skip the loader for search-only navigations
 (`shouldRevalidate`) when the data doesn't depend on them. A search box backed by the
 URL keeps its own text (`lib/url-state`), because the URL updates after typing.
 
+The table feature owns URL/Table/Aria adaptation, including selection merging and
+history policy. Its view receives renderable state and named callbacks rather than
+implementing those transitions inside JSX.
+
 Pacer is pinned at 0.23.0. Use its React adapter, not custom timer hooks. Cancel
 pending work on unmount, treat cancel and flush differently, handle IME composition,
 and never let a stale search overwrite a newer one. Debounce a value by delaying its
 URL write; pace a mutation with an async throttler and let Query own the call. For
 autosave, flush on unmount so the last edit saves: in 0.23.0, `cancel()` can't stop an
 edit queued behind a running save.
+
+Keep draft, scheduling, cancellation, flushing, and recovery under one feature owner.
+Its public actions must describe what they actually guarantee, including the
+difference between pending and in-flight work. Test a queued edit during a running
+save as well as a timer waiting while idle; the two cases can behave differently.
 
 Use Router's NavLink for navigation state, Zustand for shared client state (the theme
 in `lib/theme`), and local state for everything else.

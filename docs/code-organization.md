@@ -28,8 +28,9 @@ src/
     projects/
       components/           # Route-private component modules
         FilterBar/
-          FilterBar.tsx     # Stateless view
-          useFilterBar.ts   # Its behavior
+          FilterBar.tsx     # Thin connected entry point
+          FilterBarView.tsx # Renders props and emits intent
+          useFilterBar.ts   # Private behavior owner
           FilterBar.test.tsx
           index.ts
       lib/                  # Non-view code shared within the route
@@ -55,20 +56,80 @@ a subsystem, then group them by concept (`lib/results/query.ts`), not by type. N
 `queries`, `stores`, `types`, `utils`, `hooks`, or `components` folders inside any
 `lib`. A route's `components/` folder is the only components folder.
 
-A component folder holds the view, its private hook and helpers, and tests. The view
-renders only from props, and the hook does the integration:
+## Behavior ownership
+
+Prefer strong encapsulation over spreading a workflow across files. A module's name
+and public interface should tell a reader what it owns. Keep related state,
+transitions, and effects together behind a small interface; extraction is useful
+when it creates that boundary, not merely when it shortens a file.
+
+- **Route modules** own framework exports (`meta`, loaders, actions, boundaries)
+  and page composition. Their rendering functions don't implement feature workflows
+  or assemble a collection of private component hooks. Loaders and actions delegate
+  domain work to the owning module.
+- **Views** render state and emit intent. Formatting, conditional rendering, and
+  converting a DOM event to a value belong here. Submission sequences, cache
+  invalidation, selection merging, URL synchronization, retries, and timer policies
+  belong to the behavior owner.
+- **Connected components** bind one cohesive behavior interface to a view. Keep
+  this adapter thin; moving the route's entire workflow into another `.tsx` file
+  doesn't separate rendering from behavior.
+- **Feature hooks** own React subscriptions, lifecycle, and integration between the
+  existing libraries. Keep pure decisions in nearby functions or a reducer when
+  transitions become complex. A state-machine library is optional, not a default.
+- **Services** perform named external operations. Use one when it creates a useful
+  I/O boundary, not as a generic bucket for unrelated logic.
+- **Stores** own genuinely shared client state and actions. Don't move local
+  workflows into a global store just to empty a component. Preserve Query, Router,
+  Form, Table, and Pacer ownership described in [data and forms](data-and-forms.md).
+
+Local visual state (an open popover, a selected demo tab) can stay with its component.
+Existing library bindings such as `lib/form` and app infrastructure such as route
+focus may subscribe and manage lifecycle for their explicit purpose. Static pages
+need no controller. Purity here separates rendering from application workflows;
+it doesn't forbid every hook or require a wrapper around every primitive.
+
+A self-contained feature exposes its connected entry point. Its hook and view stay
+private unless another consumer has a concrete need for them:
 
 ```tsx
-// FilterBar.tsx
-export function FilterBar(props: FilterBarProps) { /* render from props */ }
+// FilterBarView.tsx
+export function FilterBarView(props: FilterBarProps) { /* render from props */ }
 
 // useFilterBar.ts: integrates queries, stores, and route state
 export function useFilterBar(): FilterBarProps { /* ... */ }
 
-// projects.route.tsx
-const filterBarProps = useFilterBar();
-return <FilterBar {...filterBarProps} />;
+// FilterBar.tsx: the only place that wires this feature
+export function FilterBar() {
+  const props = useFilterBar();
+  return <FilterBarView {...props} />;
+}
+
+// index.ts: public entry point
+export { FilterBar } from "./FilterBar";
+
+// projects.route.tsx: composition
+return <FilterBar />;
 ```
+
+If several parts coordinate one workflow, give them a common feature owner instead
+of independent controllers that synchronize each other. Use the smallest structure
+that makes that ownership clear. Keep schemas, types, defaults, and pure helpers
+beside their domain; they don't each need a layer or directory.
+
+Expose meaningful actions such as `resetRequest`, `changeSearch`, or `discardPending`.
+Consumers shouldn't sequence `form.reset()` and `mutation.reset()`, merge library
+selection formats, or manipulate internal flags. Typed Form/Table bindings can pass
+through a private adapter where necessary; don't duplicate their APIs or state.
+Use discriminated unions for mutually exclusive workflow states when they remove
+invalid combinations. Independent facts such as saving and having a queued edit may
+coexist, so don't force them into an artificial single status.
+
+When reviewing a behavior change, identify its owner, public actions, state source,
+and lifecycle policy. Follow an action from the view to its effect: a consumer that
+must know the internal sequence signals a leaking boundary. Test observable
+transitions, failures, cancellation, and navigation where relevant; hook counts,
+file lengths, and naming checks don't prove encapsulation.
 
 ## Design system and app
 

@@ -1,7 +1,8 @@
 # Status
 
-Updated 2026-09-27. `main` is tagged `v0.1.0`; branch `app-foundations` holds one
-commit per item below, unmerged. Nothing is pushed.
+Updated 2026-09-28. `main` includes the app foundations and encapsulation audit,
+fast-forwarded from `app-foundations`. The latest release tag is `v0.1.0`; these
+changes are unreleased. Nothing is pushed.
 
 ## Verified state
 
@@ -29,10 +30,28 @@ Not verified: reduced motion in a browser (QUALITY-01), screen-reader speech, th
 scheduled report's first run (due 2026-10-01), Node 24 or npm 11, a real static host,
 and hosted CI (not pushed).
 
+## Encapsulation audit verification — 2026-09-28
+
+Repository-only guidance and audit; application source unchanged. Global Codex
+instructions were checked after the interrupted write and remain empty/unchanged.
+
+- `npm test`: exit 0; Biome, route typegen/TypeScript, 60 tests in 18 files, and SPA
+  build passed on Node 23.7.0/npm 10.9.2. The build emitted the large components-chunk
+  warning and `EMFILE` file-watcher errors but completed and generated index.html.
+  Chart dimension warnings also appeared in jsdom tests.
+  This does not establish a warning-free build or preferred-runtime verification.
+- Keep apps clean: no matches. Relative Markdown links: 65 checked, no missing
+  targets. `git diff --check`: passed.
+- `quick_validate.py .agents/skills/new-route`: passed using a temporary Python
+  environment with PyYAML (system Python lacked it). No rendered check needed for this
+  documentation-only change. No new behavior tests were added or failure scenarios
+  reproduced; the audit distinguishes source findings from coverage gaps.
+
 ## Completed
 
 | Work | Result | Evidence |
 | --- | --- | --- |
+| Encapsulation audit and guidance | [Audit](reports/encapsulation-2026-09-28.md), repository ownership rules, and new-route skill updated. Application refactors remain ARCH-01/02/03. | Verification above |
 | Intake audit fixes | Every audit finding resolved except the MAINT-02 row (Zustand mock, Lefthook) | Source inspection and `npm test`, 2026-09-26 |
 | DEMO-01 Form | `/examples/form`: text, email, select, textarea, and checkbox fields; Zod schema; errors after blur or submit; a Query mutation owns submission; duplicate-submit guard; recoverable failure; reset. `lib/form` provides `useAppForm` with Aria-wired fields, `Form`, and `SubmitButton`. | 4 route tests, checks above |
 | DEMO-02 Table v9 | `/examples/table`: `useTable` with registered features, row IDs, sort, search, status filter, paging, and page size in the URL; selection with indeterminate state across pages; column visibility; empty and past-the-end states; loader skipped for search-only changes. | 7 route tests, 2 URL tests, checks above |
@@ -52,12 +71,14 @@ None.
 
 ## Next
 
-1. Review and merge `app-foundations` into `main`, then tag `v0.2.0` (see
-   maintenance.md, Releases). The scheduled report uses `main` once it has the script.
-2. DIST-03 once the owner says go.
-3. QUALITY-01, now including the not-found URL, route focus, and the sidebar layout.
-4. MAINT-02, starting from the upstream report: Vitest 5 (fixes the advisory),
+1. Implement ARCH-01 (Form), ARCH-02 (Table), and ARCH-03 (Pacer) from the
+   encapsulation audit, starting with the form as the reference boundary.
+2. Prepare `v0.2.0` when requested (see maintenance.md, Releases). The scheduled
+   upstream report can now use the script on `main`.
+3. DIST-03 once the owner says go.
+4. QUALITY-01, now including the not-found URL, route focus, and the sidebar layout.
+5. MAINT-02, starting from the upstream report: Vitest 5 (fixes the advisory),
    TypeScript 7, jsdom 30, and the rest.
-5. DEMO-04, then MAINT-03 and API-01.
+6. DEMO-04, then MAINT-03 and API-01.
 
 Install Node 24 locally (`nvm install 24`) so checks run on the preferred runtime.
