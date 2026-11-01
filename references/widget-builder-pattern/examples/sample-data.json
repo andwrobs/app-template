@@ -1,0 +1,506 @@
+{
+  "description": "Documentation workspace example. Counts describe example complete executions; previewRows contains only the sample rows shown.",
+  "sources": [
+    {
+      "id": "broken-links",
+      "revision": "1",
+      "name": "Broken links",
+      "description": "Links that returned the selected response status.",
+      "parameters": [
+        {
+          "key": "collection",
+          "label": "Collection",
+          "type": "select",
+          "required": true,
+          "defaultValue": "Guides",
+          "options": [
+            {
+              "value": "Guides",
+              "label": "Guides"
+            },
+            {
+              "value": "Tutorials",
+              "label": "Tutorials"
+            },
+            {
+              "value": "Reference",
+              "label": "Reference"
+            }
+          ]
+        },
+        {
+          "key": "responseStatus",
+          "label": "Response status",
+          "type": "select",
+          "required": true,
+          "defaultValue": "404",
+          "options": [
+            {
+              "value": "404",
+              "label": "404"
+            },
+            {
+              "value": "410",
+              "label": "410"
+            },
+            {
+              "value": "500",
+              "label": "500"
+            }
+          ]
+        },
+        {
+          "key": "includeArchived",
+          "label": "Include archived",
+          "type": "boolean",
+          "required": true,
+          "defaultValue": false
+        }
+      ],
+      "columns": [
+        {
+          "key": "page",
+          "label": "Page",
+          "type": "text"
+        },
+        {
+          "key": "targetPath",
+          "label": "Target path",
+          "type": "text"
+        },
+        {
+          "key": "responseStatus",
+          "label": "Response status",
+          "type": "number"
+        }
+      ],
+      "rowLabel": "links",
+      "capabilities": {
+        "tabular": true,
+        "authoritativeRowCount": true,
+        "countOnly": true,
+        "resultPaging": true,
+        "cancellation": false
+      }
+    },
+    {
+      "id": "missing-page-tags",
+      "revision": "1",
+      "name": "Missing page tags",
+      "description": "Published or draft pages without tags in a selected collection.",
+      "parameters": [
+        {
+          "key": "collection",
+          "label": "Collection",
+          "type": "select",
+          "required": true,
+          "defaultValue": "Guides",
+          "options": [
+            {
+              "value": "Guides",
+              "label": "Guides"
+            },
+            {
+              "value": "Tutorials",
+              "label": "Tutorials"
+            },
+            {
+              "value": "Reference",
+              "label": "Reference"
+            }
+          ]
+        },
+        {
+          "key": "visibility",
+          "label": "Visibility",
+          "type": "select",
+          "required": true,
+          "defaultValue": "Published",
+          "options": [
+            {
+              "value": "Published",
+              "label": "Published"
+            },
+            {
+              "value": "Draft",
+              "label": "Draft"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "key": "page",
+          "label": "Page",
+          "type": "text"
+        },
+        {
+          "key": "path",
+          "label": "Path",
+          "type": "text"
+        },
+        {
+          "key": "collection",
+          "label": "Collection",
+          "type": "text"
+        },
+        {
+          "key": "visibility",
+          "label": "Visibility",
+          "type": "text"
+        },
+        {
+          "key": "updated",
+          "label": "Updated",
+          "type": "text"
+        }
+      ],
+      "rowLabel": "pages",
+      "capabilities": {
+        "tabular": true,
+        "authoritativeRowCount": true,
+        "countOnly": true,
+        "resultPaging": true,
+        "cancellation": false
+      }
+    },
+    {
+      "id": "draft-review-queue",
+      "revision": "1",
+      "name": "Draft review queue",
+      "description": "Draft documentation pages waiting for review.",
+      "parameters": [
+        {
+          "key": "collection",
+          "label": "Collection",
+          "type": "select",
+          "required": true,
+          "defaultValue": "All collections",
+          "options": [
+            {
+              "value": "All collections",
+              "label": "All collections"
+            },
+            {
+              "value": "Guides",
+              "label": "Guides"
+            },
+            {
+              "value": "Tutorials",
+              "label": "Tutorials"
+            },
+            {
+              "value": "Reference",
+              "label": "Reference"
+            }
+          ]
+        },
+        {
+          "key": "olderThanDays",
+          "label": "Older than",
+          "type": "number",
+          "required": true,
+          "defaultValue": 7,
+          "integer": true,
+          "min": 0
+        },
+        {
+          "key": "includeArchived",
+          "label": "Include archived",
+          "type": "boolean",
+          "required": true,
+          "defaultValue": false
+        }
+      ],
+      "columns": [
+        {
+          "key": "page",
+          "label": "Page",
+          "type": "text"
+        },
+        {
+          "key": "collection",
+          "label": "Collection",
+          "type": "text"
+        },
+        {
+          "key": "waitingDays",
+          "label": "Waiting days",
+          "type": "number"
+        }
+      ],
+      "rowLabel": "drafts",
+      "capabilities": {
+        "tabular": true,
+        "authoritativeRowCount": true,
+        "countOnly": false,
+        "resultPaging": true,
+        "cancellation": false
+      }
+    }
+  ],
+  "dashboard": {
+    "id": "content-overview",
+    "revision": "1",
+    "title": "Content overview",
+    "widgets": [
+      {
+        "id": "widget-links",
+        "title": "Broken links",
+        "sourceId": "broken-links",
+        "sourceRevision": "1",
+        "savedParameters": {
+          "collection": "Guides",
+          "responseStatus": "404",
+          "includeArchived": false
+        },
+        "kind": "metric",
+        "presentation": {
+          "label": "Matching links"
+        }
+      },
+      {
+        "id": "widget-tags",
+        "title": "Pages missing tags",
+        "sourceId": "missing-page-tags",
+        "sourceRevision": "1",
+        "savedParameters": {
+          "collection": "Guides",
+          "visibility": "Published"
+        },
+        "kind": "metric",
+        "presentation": {
+          "label": "Matching pages"
+        }
+      },
+      {
+        "id": "widget-drafts",
+        "title": "Drafts awaiting review",
+        "sourceId": "draft-review-queue",
+        "sourceRevision": "1",
+        "savedParameters": {
+          "collection": "All collections",
+          "olderThanDays": 7,
+          "includeArchived": false
+        },
+        "kind": "metric",
+        "presentation": {
+          "label": "Matching drafts"
+        }
+      },
+      {
+        "id": "widget-tags-table",
+        "title": "Pages missing tags",
+        "sourceId": "missing-page-tags",
+        "sourceRevision": "1",
+        "savedParameters": {
+          "collection": "Guides",
+          "visibility": "Published"
+        },
+        "kind": "table",
+        "presentation": {
+          "visibleColumns": [
+            "page",
+            "collection",
+            "updated"
+          ],
+          "previewRows": 5,
+          "density": "comfortable"
+        }
+      },
+      {
+        "id": "widget-drafts-table",
+        "title": "Drafts awaiting review",
+        "sourceId": "draft-review-queue",
+        "sourceRevision": "1",
+        "savedParameters": {
+          "collection": "All collections",
+          "olderThanDays": 7,
+          "includeArchived": false
+        },
+        "kind": "table",
+        "presentation": {
+          "visibleColumns": [
+            "page",
+            "collection",
+            "waitingDays"
+          ],
+          "previewRows": 5,
+          "density": "comfortable"
+        }
+      }
+    ],
+    "layouts": {
+      "wide": [
+        {
+          "widgetId": "widget-links",
+          "x": 0,
+          "y": 0,
+          "width": 4,
+          "height": 3
+        },
+        {
+          "widgetId": "widget-tags",
+          "x": 4,
+          "y": 0,
+          "width": 4,
+          "height": 3
+        },
+        {
+          "widgetId": "widget-drafts",
+          "x": 8,
+          "y": 0,
+          "width": 4,
+          "height": 3
+        },
+        {
+          "widgetId": "widget-tags-table",
+          "x": 0,
+          "y": 3,
+          "width": 6,
+          "height": 5
+        },
+        {
+          "widgetId": "widget-drafts-table",
+          "x": 6,
+          "y": 3,
+          "width": 6,
+          "height": 5
+        }
+      ],
+      "medium": [
+        {
+          "widgetId": "widget-links",
+          "x": 0,
+          "y": 0,
+          "width": 4,
+          "height": 3
+        },
+        {
+          "widgetId": "widget-tags",
+          "x": 4,
+          "y": 0,
+          "width": 4,
+          "height": 3
+        },
+        {
+          "widgetId": "widget-drafts",
+          "x": 8,
+          "y": 0,
+          "width": 4,
+          "height": 3
+        },
+        {
+          "widgetId": "widget-tags-table",
+          "x": 0,
+          "y": 3,
+          "width": 6,
+          "height": 5
+        },
+        {
+          "widgetId": "widget-drafts-table",
+          "x": 6,
+          "y": 3,
+          "width": 6,
+          "height": 5
+        }
+      ],
+      "narrow": [
+        {
+          "widgetId": "widget-links",
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 3
+        },
+        {
+          "widgetId": "widget-tags",
+          "x": 0,
+          "y": 3,
+          "width": 1,
+          "height": 3
+        },
+        {
+          "widgetId": "widget-drafts",
+          "x": 0,
+          "y": 6,
+          "width": 1,
+          "height": 3
+        },
+        {
+          "widgetId": "widget-tags-table",
+          "x": 0,
+          "y": 9,
+          "width": 1,
+          "height": 5
+        },
+        {
+          "widgetId": "widget-drafts-table",
+          "x": 0,
+          "y": 14,
+          "width": 1,
+          "height": 5
+        }
+      ]
+    }
+  },
+  "exampleCounts": {
+    "broken-links": 128,
+    "missing-page-tags": 37
+  },
+  "unrunWidgetIds": [
+    "widget-drafts",
+    "widget-drafts-table"
+  ],
+  "previewRows": [
+    {
+      "page": "Quick start",
+      "path": "/guides/quick-start",
+      "collection": "Guides",
+      "visibility": "Published",
+      "updated": "2 days ago"
+    },
+    {
+      "page": "Installation",
+      "path": "/guides/install",
+      "collection": "Guides",
+      "visibility": "Published",
+      "updated": "3 days ago"
+    },
+    {
+      "page": "Keyboard shortcuts",
+      "path": "/guides/keyboard-shortcuts",
+      "collection": "Guides",
+      "visibility": "Published",
+      "updated": "4 days ago"
+    },
+    {
+      "page": "Search tips",
+      "path": "/guides/search-tips",
+      "collection": "Guides",
+      "visibility": "Published",
+      "updated": "5 days ago"
+    },
+    {
+      "page": "Troubleshooting",
+      "path": "/guides/troubleshooting",
+      "collection": "Guides",
+      "visibility": "Published",
+      "updated": "6 days ago"
+    },
+    {
+      "page": "Navigation",
+      "path": "/guides/navigation",
+      "collection": "Guides",
+      "visibility": "Published",
+      "updated": "7 days ago"
+    },
+    {
+      "page": "Accessibility",
+      "path": "/guides/accessibility",
+      "collection": "Guides",
+      "visibility": "Published",
+      "updated": "8 days ago"
+    }
+  ]
+}
