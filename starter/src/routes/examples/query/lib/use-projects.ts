@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import type { Scenario } from "~/lib/demo/projects";
 import { projectsQuery } from "../projects.queries";
-import type { Scenario } from "./projects";
 
 // The scenario's projects and a refresh that takes no arguments. Bound to
 // onPress directly, query.refetch would receive the PressEvent as its options.

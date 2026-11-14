@@ -31,9 +31,9 @@ a page and `react-router` for other route work.
 - A route folder is its role files (`.route.ts`, `.page.tsx`, `.queries.ts`, and the
   rest) plus one `lib/` for everything else it owns. `.route.ts` holds `meta` and
   `clientLoader` and ends with `export default XPage`. Shared code goes in a named
-  `src/lib` capability. Outside a route, only `src/services.ts` imports its files, to
-  build its services (Biome enforces this). kebab-case file names, named exports, `type` not `interface`, no `index.ts`
-  barrels. See [code organization](docs/code-organization.md).
+  `src/lib` capability; services live in a `src/lib` domain folder. Nothing outside a
+  route imports its files (Biome enforces this). kebab-case file names, named exports,
+  `type` not `interface`, no `index.ts` barrels. See [code organization](docs/code-organization.md).
 - Prefer strong encapsulation: a reader should see what a module owns from its
   name and public interface. Pages compose features; views render state
   and emit intent. Keep workflow transitions, request coordination, timing, and

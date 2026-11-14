@@ -18,14 +18,15 @@ src/routes/<feature>/
   <feature>.route.test.tsx
   <thing>.queries.ts         # queryOptions calling the service instance
   lib/                       # everything else the route owns
-    <thing>.ts               # Zod schema and types, if it loads data
-    <thing>.service.ts       # ThingsService and createThingsService
-    <thing>.service.test.ts
     <name>/                  # a part with several files
       <name>.tsx             # connected entry: binds private hook to view
       <name>-view.tsx        # renders state, emits intent
       use-<name>.ts          # owns workflow and library integration
       <name>.test.tsx
+src/lib/<thing>/             # the domain, if it loads data
+  <thing>.ts                 # Zod schema and types
+  <thing>.service.ts         # ThingsService and createThingsService
+  <thing>.service.test.ts
 ```
 
 Role files sit at the route root; everything else goes in `lib/`, flat until a part
@@ -44,7 +45,8 @@ route's folder (Biome enforces this).
    subscription is sufficient.
 
    **Data** follows [services and state](../../../docs/services-and-state.md). Put the
-   schema and types in `lib/<thing>.ts`. In `lib/<thing>.service.ts`, export `ThingsService`
+   schema and types in `src/lib/<thing>/<thing>.ts`. In
+   `src/lib/<thing>/<thing>.service.ts`, export `ThingsService`
    and `createThingsService({ api }: Deps)`, which calls
    `api.request(path, schema, { signal })`. In `src/services.ts`, build it once and
    export `thingsService`; if the file has no client yet, add

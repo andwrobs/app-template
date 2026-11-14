@@ -1,7 +1,7 @@
+import { parseScenario } from "~/lib/demo/projects";
 import { pageTitle } from "~/lib/meta/title";
 import { queryClient } from "~/lib/query/client";
 import type { Route } from "./+types/query.route";
-import { parseScenario } from "./lib/projects";
 import { projectsQuery } from "./projects.queries";
 import { QueryErrorBoundary, QueryPage } from "./query.page";
 

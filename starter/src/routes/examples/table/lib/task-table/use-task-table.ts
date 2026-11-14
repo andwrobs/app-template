@@ -3,9 +3,9 @@ import { functionalUpdate, useTable } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { Key, Selection, SortDescriptor } from "react-aria-components";
 import { useSearchParams } from "react-router";
+import type { Task } from "~/lib/demo/tasks";
 import { typingState, useSearchDraft } from "~/lib/url-state/use-search-draft";
 import { tasksQuery } from "../../tasks.queries";
-import type { Task } from "../tasks";
 import {
 	isTaskStatus,
 	parseTableUrlState,

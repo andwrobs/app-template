@@ -118,10 +118,11 @@ it("leaves out the examples and every reference to them", () => {
 
 	expect(existsSync(path.join(app, "src/routes/examples"))).toBe(false);
 	expect(existsSync(path.join(app, "public/demo"))).toBe(false);
+	expect(existsSync(path.join(app, "src/lib/demo"))).toBe(false);
 	const references = allFiles(app)
 		.filter((file) => !file.endsWith("package-lock.json"))
 		.filter((file) =>
-			/examples\/|exampleRoutes/.test(readFileSync(file, "utf8")),
+			/examples\/|lib\/demo\/|exampleRoutes/.test(readFileSync(file, "utf8")),
 		);
 	expect(references).toEqual([]);
 	// The composition root keeps its comment and builds nothing.

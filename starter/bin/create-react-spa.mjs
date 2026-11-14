@@ -53,14 +53,14 @@ const skipped = (name) => name === ".DS_Store" || name.startsWith(".env");
 
 // --no-examples: folders to delete, files whose example lines go, and docs
 // whose "## Examples" section goes.
-const exampleFolders = ["src/routes/examples", "public/demo"];
+const exampleFolders = ["src/routes/examples", "src/lib/demo", "public/demo"];
 const exampleLineFiles = [
 	"src/routes.ts",
 	"src/services.ts",
 	"src/lib/app/nav.ts",
 	"src/routes/home/home.page.tsx",
 ];
-const exampleLine = /\/examples\/|exampleRoutes|demoApi|createDemo/;
+const exampleLine = /\/examples\/|lib\/demo\/|exampleRoutes|demoApi|createDemo/;
 const exampleSectionFiles = [
 	"README.md",
 	"docs/code-organization.md",

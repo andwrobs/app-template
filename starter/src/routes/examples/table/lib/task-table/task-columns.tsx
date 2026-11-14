@@ -15,9 +15,9 @@ import {
 	sortFn_text,
 	tableFeatures,
 } from "@tanstack/react-table";
+import { type Task, taskStatuses } from "~/lib/demo/tasks";
 import { Badge } from "~/lib/ui/badge";
 import { Checkbox } from "~/lib/ui/checkbox";
-import { type Task, taskStatuses } from "../tasks";
 
 // v9 registers only the features this table uses.
 export const taskFeatures = tableFeatures({

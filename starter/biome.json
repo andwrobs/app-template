@@ -102,6 +102,26 @@
 			}
 		},
 		{
+			"includes": ["src/services.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["~/routes/**"],
+										"message": "A route's files are imported only from inside that route, by relative path. Shared code goes in a named src/lib capability."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
 			"includes": [
 				"src/routes/**/*.ts",
 				"!src/routes/**/lib/**",

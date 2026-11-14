@@ -24,6 +24,10 @@ src/
     meta/                   # App name and page titles
     theme/                  # Light and dark theme (Zustand) and its head script
     url-state/              # URL-backed input drafts
+    results/                # A domain: schema and service
+      results.ts            # Schema and types
+      results.service.ts    # ResultsService and createResultsService
+      results.service.test.ts
   routes/
     projects/
       projects.route.ts     # meta, clientLoader, export default ProjectsPage
@@ -31,9 +35,6 @@ src/
       projects.route.test.tsx
       results.queries.ts    # Query options calling resultsService
       lib/                  # Everything else the route owns
-        results.ts          # Schema and types
-        results.service.ts  # ResultsService and createResultsService
-        results.service.test.ts
         filter-bar/
           filter-bar.tsx    # Thin connected entry point
           filter-bar-view.tsx # Renders props and emits intent
@@ -44,10 +45,11 @@ src/
 A route folder is its role files plus one `lib/`. `.route.ts`, `.page.tsx`,
 `.layout.tsx`, `.provider.tsx`, `.queries.ts`, `.mutations.ts`, `.store.ts`,
 `.search.ts` and their tests sit at the route root. Everything else the route owns
-(components, hooks, services, schemas, slices, pure functions) goes in `lib/`, flat
+(components, hooks, schemas, slices, pure functions) goes in `lib/`, flat
 until a component or capability has several files, then in a kebab-case folder:
 `lib/filter-bar/`. File names are kebab-case, exports are named, types use `type`,
-and there are no `index.ts` barrels; import from the file.
+and there are no `index.ts` barrels; import from the file. Services live in a
+`src/lib` domain folder, beside the domain's schema.
 
 ## Placement
 
@@ -60,7 +62,7 @@ and there are no `index.ts` barrels; import from the file.
 | Visual primitive or pattern with no app knowledge | `lib/ui` |
 | Wraps every route (providers, layout, navigation) | `lib/app` |
 | Binds Form, Table, Query, or the router to UI, shared across routes | A capability such as `lib/form`, never `lib/ui` |
-| A service instance | `src/services.ts`; the factory stays with its domain ([services and state](services-and-state.md)) |
+| A service | The factory in a `src/lib` domain folder; the instance in `src/services.ts` ([services and state](services-and-state.md)) |
 
 Tests sit next to the code they test. Folders in `lib/` are named by concept, never
 by type: no `components`, `queries`, `stores`, `types`, `utils`, or `hooks` folders.
@@ -164,8 +166,7 @@ root.tsx  ──►  lib/app           ──►  lib/query, lib/ui
 ```
 
 `src/lib` never imports `src/routes`, and no file outside a route imports its `lib/`
-or role files (Biome enforces both). `src/routes.ts` names route modules by path and
-`src/services.ts` builds route services.
+or role files (Biome enforces both). `src/routes.ts` names route modules by path.
 
 Because `lib/ui` has no app imports, it can become a workspace package later without a
 rewrite. Do that when it has its own API or owner, or a second app uses it.
@@ -187,8 +188,8 @@ this doc together.
 
 ## Examples
 
-Examples live in `src/routes/examples/<name>/`, with fixtures in `public/demo`. Only
-`src/routes.ts` and `src/services.ts` import them. To remove them, delete both
+Examples live in `src/routes/examples/<name>/`, their services and schemas in
+`src/lib/demo`, and fixtures in `public/demo`. To remove them, delete the three
 folders, the `exampleRoutes` lines in `src/routes.ts`, the example lines in
 `src/services.ts`, and the `/examples/` links in `lib/app/nav.ts` and
 `routes/home/home.page.tsx`.

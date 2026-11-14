@@ -49,7 +49,7 @@ returns an object typed by an explicit `XService` type. It holds I/O and domain 
 never UI or client state.
 
 ```ts
-// lib/tasks.service.ts
+// src/lib/tasks/tasks.service.ts
 import type { ApiClient } from "~/lib/api/api";
 import { type Task, taskSchema, tasksSchema } from "./tasks";
 
@@ -111,7 +111,7 @@ their dependencies at creation; everything else imports the instances.
 import { createApiClient } from "~/lib/api/api";
 import { env } from "~/lib/env/env";
 import { createLedgerService } from "~/lib/ledger/ledger.service";
-import { createBillingService } from "~/routes/billing/lib/billing.service";
+import { createBillingService } from "~/lib/billing/billing.service";
 
 const api = createApiClient({ baseUrl: env.VITE_API_URL });
 
@@ -121,7 +121,7 @@ export const billingService = createBillingService({ api, ledger: ledgerService 
 
 - **One composition root.** Outside tests, it's the only module that imports a
   factory. Biome enforces this.
-- **Factories stay with their domain,** in a route's `lib/` or a `src/lib` capability;
+- **Factories stay with their domain** in a `src/lib` folder, beside its schema;
   only the instances live here.
 - **Build in dependency order.** A service that depends on another is created after
   it and receives the instance through `Deps`.
@@ -383,10 +383,10 @@ that hold factories or instances. Report each violation with its rule and a conc
 
 ## Examples
 
-- Services on a fixture client: `src/routes/examples/query/lib/projects.service.ts`
-  (with its test), `table/lib/tasks.service.ts`, and `pacer/lib/task-search.service.ts`.
-- Stand-in implementations: `form/lib/project-request.service.ts` and
-  `pacer/lib/note.service.ts`.
+- Services on a fixture client, in `src/lib/demo`: `projects.service.ts` (with its
+  test), `tasks.service.ts`, and `task-search.service.ts`.
+- Stand-in implementations: `src/lib/demo/project-request.service.ts` and
+  `note.service.ts`.
 - Query options: `query/projects.queries.ts`, `table/tasks.queries.ts`.
 - A mutation calling a service:
   `form/lib/project-request-form/use-project-request-form.ts`.

@@ -1,9 +1,9 @@
 import { act, fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { searchLatency } from "~/lib/demo/task-search";
 import { noteService } from "~/services";
 import { renderRoute } from "../../../../test-utils/render-route";
 import { searchWait } from "./lib/debounced-search/use-debounced-search";
-import { searchLatency } from "./lib/task-search";
 import { saveInterval } from "./lib/throttled-autosave/use-throttled-autosave";
 import PacerPage, { meta } from "./pacer.route";
 

@@ -6,6 +6,7 @@ import {
 	Columns3Icon,
 } from "lucide-react";
 import { useCallback } from "react";
+import { taskStatuses } from "~/lib/demo/tasks";
 import { Button, LinkButton } from "~/lib/ui/button";
 import {
 	DropdownMenu,
@@ -30,7 +31,6 @@ import {
 	TableRow,
 } from "~/lib/ui/table";
 import { TextField } from "~/lib/ui/text-field";
-import { taskStatuses } from "../tasks";
 import { pageSizes } from "./table-url-state";
 import type { TaskTableProps } from "./use-task-table";
 

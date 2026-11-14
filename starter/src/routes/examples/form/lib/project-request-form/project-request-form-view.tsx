@@ -1,6 +1,6 @@
+import { teams } from "~/lib/demo/project-request";
 import { Button, LinkButton } from "~/lib/ui/button";
 import { FieldGroup } from "~/lib/ui/field";
-import { teams } from "../project-request";
 import type { ProjectRequestFormProps } from "./use-project-request-form";
 
 export function ProjectRequestFormView({

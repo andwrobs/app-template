@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
+import type { Scenario } from "~/lib/demo/projects";
 import { projectsService } from "~/services";
-import type { Scenario } from "./lib/projects";
 
 export function projectsQuery(scenario: Scenario) {
 	return queryOptions({
