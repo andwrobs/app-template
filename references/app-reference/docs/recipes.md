@@ -83,7 +83,7 @@ Do this the first time two capabilities need the same state.
 
 1. Check the state passes the test: two capabilities read it, or another
    capability's action changes it.
-2. In the capability's folder, write the pure transitions (`<capability>-state.ts`)
+2. In the capability's folder under the route's `lib/`, write the pure transitions (`<capability>-state.ts`)
    and test them.
 3. Write `<capability>.slice.ts`: one state type, one actions type, one deps type,
    and `create<Capability>Slice(scope, deps)` that applies the transitions.

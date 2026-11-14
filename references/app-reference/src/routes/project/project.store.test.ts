@@ -1,5 +1,5 @@
 import { expect, test, vi } from "vitest";
-import type { SettledArchive } from "./archive/archive-flow";
+import type { SettledArchive } from "./lib/archive/archive-flow";
 import { createProjectStore, type ProjectDeps } from "./project.store";
 
 function build(overrides: Partial<ProjectDeps> = {}) {

@@ -52,26 +52,26 @@ import {
 	sliceScopes,
 	startAll,
 } from "~/lib/route-store/route-store";
-import { initialArchive } from "./archive/archive-flow";
+import { initialArchive } from "./lib/archive/archive-flow";
 import {
 	type ArchiveActions,
 	type ArchiveDeps,
 	type ArchiveState,
 	createArchiveSlice,
-} from "./archive/archive.slice";
-import { initialDetails } from "./details/details-state";
+} from "./lib/archive/archive.slice";
+import { initialDetails } from "./lib/details/details-state";
 import {
 	createDetailsSlice,
 	type DetailsActions,
 	type DetailsDeps,
 	type DetailsState,
-} from "./details/details.slice";
+} from "./lib/details/details.slice";
 import {
 	createSelectionSlice,
 	initialSelection,
 	type SelectionActions,
 	type SelectionState,
-} from "./selection/selection.slice";
+} from "./lib/selection/selection.slice";
 
 export type ProjectState = {
 	selection: SelectionState;
@@ -236,7 +236,7 @@ Those start in `start()`.
 ## Slices
 
 A slice is one capability's part of the store, in
-`<capability>/<capability>.slice.ts`.
+`lib/<capability>/<capability>.slice.ts`.
 
 - **One key.** It exports one state type, its initial value (or a function of what
   it reads at creation), one actions type and one deps type. It reads and writes
@@ -254,7 +254,7 @@ A slice is one capability's part of the store, in
 The transitions:
 
 ```ts
-// src/routes/project/details/details-state.ts
+// src/routes/project/lib/details/details-state.ts
 // Pure transitions for the details panel: a docked column on a wide screen,
 // a drawer on a narrow one. Whether the docked column is open is a setting,
 // so it isn't here.
@@ -297,7 +297,7 @@ export const focusClaimed = (state: DetailsState): DetailsState =>
 The slice that applies them:
 
 ```ts
-// src/routes/project/details/details.slice.ts
+// src/routes/project/lib/details/details.slice.ts
 import type { Slice, SliceScope } from "~/lib/route-store/route-store";
 import {
 	changeLayout,
@@ -382,7 +382,7 @@ Three things in it are the pattern:
 A simple slice needs no transition module:
 
 ```ts
-// src/routes/project/selection/selection.slice.ts
+// src/routes/project/lib/selection/selection.slice.ts
 import type { Slice, SliceScope } from "~/lib/route-store/route-store";
 
 export type SelectionState = { ids: ReadonlySet<string> };
@@ -451,10 +451,10 @@ A feature hook joins the two sides for rendering. It subscribes to the store for
 screen state and to the setting's owner for the setting:
 
 ```ts
-// src/routes/project/details/use-details.ts
+// src/routes/project/lib/details/use-details.ts
 import { useEffect } from "react";
 import { useDetailsOpen } from "~/lib/preferences/settings";
-import { ProjectFocus, useProjectActions, useProjectStore } from "../project.store";
+import { ProjectFocus, useProjectActions, useProjectStore } from "../../project.store";
 
 /** What the details panel shows and how to open or close it. */
 export function useDetails() {
@@ -609,7 +609,7 @@ export function startAll(...slices: readonly { start?: () => () => void }[]) {
 ```ts
 // src/routes/project/project.store.test.ts
 import { expect, test, vi } from "vitest";
-import type { SettledArchive } from "./archive/archive-flow";
+import type { SettledArchive } from "./lib/archive/archive-flow";
 import { createProjectStore, type ProjectDeps } from "./project.store";
 
 function build(overrides: Partial<ProjectDeps> = {}) {

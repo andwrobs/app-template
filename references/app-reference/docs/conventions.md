@@ -16,6 +16,12 @@ Part of the [app reference](README.md).
   `.slice.ts`, `.search.ts`, `.test.ts`. A role that exists gets its suffix; don't
   invent a new suffix without adding it to the relevant guide:
   [Data Mode routing](routing.md) or [Framework Mode routing](framework-routing.md).
+- **A route folder is its role files plus one `lib/`.** `.route.ts`, `.page.tsx`,
+  `.layout.tsx`, `.provider.tsx`, `.queries.ts`, `.mutations.ts`, `.store.ts`,
+  `.search.ts` and their tests sit at the route root. Everything else the route
+  owns (components, hooks, services, schemas, slices, pure functions) goes in
+  `lib/`, flat until a component or capability has several files, then in a
+  kebab-case folder: `lib/details/`. No `components/` folder.
 - **Named exports by default.** Framework Mode requires default exports for its
   route components and configuration files; those are deliberate exceptions.
   For a separate page, explicitly import the named component in the route module,

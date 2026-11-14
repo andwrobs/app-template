@@ -6,26 +6,26 @@ import {
 	sliceScopes,
 	startAll,
 } from "~/lib/route-store/route-store";
-import { initialArchive } from "./archive/archive-flow";
+import { initialArchive } from "./lib/archive/archive-flow";
 import {
 	type ArchiveActions,
 	type ArchiveDeps,
 	type ArchiveState,
 	createArchiveSlice,
-} from "./archive/archive.slice";
-import { initialDetails } from "./details/details-state";
+} from "./lib/archive/archive.slice";
+import { initialDetails } from "./lib/details/details-state";
 import {
 	createDetailsSlice,
 	type DetailsActions,
 	type DetailsDeps,
 	type DetailsState,
-} from "./details/details.slice";
+} from "./lib/details/details.slice";
 import {
 	createSelectionSlice,
 	initialSelection,
 	type SelectionActions,
 	type SelectionState,
-} from "./selection/selection.slice";
+} from "./lib/selection/selection.slice";
 
 export type ProjectState = {
 	selection: SelectionState;

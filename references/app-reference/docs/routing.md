@@ -32,8 +32,8 @@ role is in the name and a search for `.route.ts` or `.queries.ts` finds every on
 | `app-shell.layout.tsx` | For a layout route: what surrounds its children, with an `<Outlet />` | `AppShellLayout` |
 
 A route has only the files it needs. A static page is a `.route.ts` and a
-`.page.tsx`. Everything else the route owns sits in capability folders beside
-these files ([app shell](app-shell.md#where-code-lives)).
+`.page.tsx`. Everything else the route owns sits under the route's `lib/`
+([app shell](app-shell.md#where-code-lives)).
 
 Why split the route from the page: `.route.ts` is plain TypeScript the router
 needs up front, and it is small. `.page.tsx` is the screen's code, loaded only
@@ -263,7 +263,7 @@ the session.
 ```tsx
 // src/routes/project/project.page.tsx
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { DetailsToggle } from "./details/details-toggle";
+import { DetailsToggle } from "./lib/details/details-toggle";
 import { ProjectProvider } from "./project.provider";
 import { projectTasksOptions } from "./project.queries";
 import { useProjectSearch } from "./project.search";

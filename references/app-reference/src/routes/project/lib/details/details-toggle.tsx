@@ -1,4 +1,4 @@
-import { ProjectFocus } from "../project.store";
+import { ProjectFocus } from "../../project.store";
 import { DetailsToggleView } from "./details-toggle-view";
 import { useDetails } from "./use-details";
 

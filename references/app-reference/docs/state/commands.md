@@ -68,7 +68,7 @@ A form that drives it stays in the capability, and is the only place the form an
 the mutation meet:
 
 ```ts
-// src/routes/project/rename/use-rename-form.ts
+// src/routes/project/lib/rename/use-rename-form.ts
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { classifyFailure } from "~/lib/api/api-error";
@@ -110,7 +110,7 @@ The rules are pure transitions. Each takes the slice's state and an intent and
 returns a **step**: the next state and, when there is one, the request to send.
 
 ```ts
-// src/routes/project/archive/archive-flow.ts
+// src/routes/project/lib/archive/archive-flow.ts
 // Pure transitions for Archive: what each intent does to the dialog and its
 // one request. The slice applies them and sends what they ask for.
 
@@ -203,7 +203,7 @@ The slice applies the step, sends through its port, and hands the reply to anoth
 transition:
 
 ```ts
-// src/routes/project/archive/archive.slice.ts
+// src/routes/project/lib/archive/archive.slice.ts
 import type { Slice, SliceScope } from "~/lib/route-store/route-store";
 import {
 	type ArchiveIntent,

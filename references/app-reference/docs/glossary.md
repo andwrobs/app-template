@@ -15,7 +15,7 @@ The terms the [app reference](README.md) uses. Each has one meaning throughout.
 | Mirror | A copy of a value another owner holds. Avoided, because the copy goes stale. Allowed only when a change in the value is itself a transition for the store. |
 | Screen | What one route renders. Also called a page. |
 | Subject | What a screen describes: the project a project page shows. A screen with no subject describes the route itself. |
-| Capability | One thing a screen or the app does, in its own folder: `selection/`, `details/`, `archive/`. |
+| Capability | One thing a screen or the app does, in its own folder: under the route's `lib/` (`lib/selection/`, `lib/details/`, `lib/archive/`) or in `src/lib`. |
 | Key (React) | The `key` prop on a store's provider, set to the subject's id. A new key unmounts everything under the provider and mounts it again with a new store. |
 
 ## Routing

@@ -370,7 +370,7 @@ export function useStarTask(projectId: string, order: TaskOrder) {
 A form that drives a mutation stays in its capability:
 
 ```ts
-// src/routes/project/rename/use-rename-form.ts
+// src/routes/project/lib/rename/use-rename-form.ts
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { classifyFailure } from "~/lib/api/api-error";

@@ -95,11 +95,12 @@ src/
       <route>.page.tsx    # page UI
       <route>.store.ts    # only when capabilities share state
       <route>.search.ts   # only when the route has search params
-      <capability>/       # everything one capability needs, together
+      lib/                # everything else the route owns
+        <capability>/     # one capability's files, together
 ```
 
 - **Organize by owner, then capability.** A capability's view, hook, slice,
-  transitions and tests sit in one folder. There are no `components/`, `hooks/`,
+  transitions and tests sit in one folder under the route's `lib/`. There are no `components/`, `hooks/`,
   `utils/` or `types/` folders anywhere.
 - **Code starts in its route and moves to `src/lib` when a second route needs it**
   or it takes an app-wide job. Not before.
@@ -118,7 +119,7 @@ A capability that renders has three parts.
 store, query or router hook, so it can be rendered with plain props.
 
 ```tsx
-// src/routes/project/details/details-toggle-view.tsx
+// src/routes/project/lib/details/details-toggle-view.tsx
 import type { Ref } from "react";
 
 /** A view: renders what it is given and says what the user did. No hooks into the app. */
@@ -149,10 +150,10 @@ returns what the view renders and the intents it can raise. Sequences, retries,
 invalidation and focus live here or below, never in JSX handlers.
 
 ```ts
-// src/routes/project/details/use-details.ts
+// src/routes/project/lib/details/use-details.ts
 import { useEffect } from "react";
 import { useDetailsOpen } from "~/lib/preferences/settings";
-import { ProjectFocus, useProjectActions, useProjectStore } from "../project.store";
+import { ProjectFocus, useProjectActions, useProjectStore } from "../../project.store";
 
 /** What the details panel shows and how to open or close it. */
 export function useDetails() {
@@ -191,8 +192,8 @@ export function useDetailsFocusReturn() {
 **The connected component** binds one to the other and is what the page renders.
 
 ```tsx
-// src/routes/project/details/details-toggle.tsx
-import { ProjectFocus } from "../project.store";
+// src/routes/project/lib/details/details-toggle.tsx
+import { ProjectFocus } from "../../project.store";
 import { DetailsToggleView } from "./details-toggle-view";
 import { useDetails } from "./use-details";
 

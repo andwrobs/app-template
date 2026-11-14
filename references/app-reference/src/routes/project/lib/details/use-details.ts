@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDetailsOpen } from "~/lib/preferences/settings";
-import { ProjectFocus, useProjectActions, useProjectStore } from "../project.store";
+import { ProjectFocus, useProjectActions, useProjectStore } from "../../project.store";
 
 /** What the details panel shows and how to open or close it. */
 export function useDetails() {

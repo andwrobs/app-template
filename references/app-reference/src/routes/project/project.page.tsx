@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { DetailsToggle } from "./details/details-toggle";
+import { DetailsToggle } from "./lib/details/details-toggle";
 import { ProjectProvider } from "./project.provider";
 import { projectTasksOptions } from "./project.queries";
 import { useProjectSearch } from "./project.search";

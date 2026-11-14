@@ -41,8 +41,8 @@ another.
 | Where focus goes next, when capabilities share the targets | A focus scope | One subject on screen |
 | Anything one component reads (an open popover, a hover) | The component | The component |
 
-A **capability** is one thing a screen does, in its own folder beside the route
-module: `selection/`, `details/`, `archive/`. A **subject** is what a screen
+A **capability** is one thing a screen does, in its own folder under the route's
+`lib/`: `lib/selection/`, `lib/details/`, `lib/archive/`. A **subject** is what a screen
 describes: the project a project page shows. A screen with no subject (a settings
 page) describes the route itself.
 
@@ -123,14 +123,15 @@ src/
       project.store.ts              # types, createProjectStore(deps), context, focus scope
       project.provider.tsx          # builds the store's ports and provides it
       project.store.test.ts
-      selection/selection.slice.ts
-      details/
-        details-state.ts            # pure transitions
-        details.slice.ts
-        use-details.ts              # feature hook
-      archive/
-        archive-flow.ts             # pure transitions for a command
-        archive.slice.ts
+      lib/
+        selection/selection.slice.ts
+        details/
+          details-state.ts          # pure transitions
+          details.slice.ts
+          use-details.ts            # feature hook
+        archive/
+          archive-flow.ts           # pure transitions for a command
+          archive.slice.ts
 ```
 
 Suffixes carry meaning: `.store.ts` is a store, `.slice.ts` is one capability's

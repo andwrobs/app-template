@@ -103,8 +103,8 @@ has one owner and that browser cache warming uses `clientLoader`.
 }
 ```
 
-**Imports point one way.** `src/lib/**` may not import `~/routes/**`; a route may
-not import another route's folder; `src/lib/ui/**` may not import the router,
+**Imports point one way.** `src/lib/**` may not import `~/routes/**`; no file
+imports another route's `lib/` or role files; `src/lib/ui/**` may not import the router,
 Query, Zustand or other `~/lib` code; only `src/services.ts` and tests may import
 a `*.service` module. Each is a `noRestrictedImports` pattern on the matching
 path.
