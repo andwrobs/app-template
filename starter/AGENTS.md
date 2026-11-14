@@ -25,9 +25,9 @@ a page and `react-router` for other route work.
 - Dependencies point one way: components → feature hooks, stores, and query options
   → services → clients (`lib/api`). A service is a stateless `createXService(deps)`
   factory typed by an `XService` type. `src/services.ts`, the composition root,
-  builds each one once; everything else imports the instances. Components never
-  import services and bind handlers from hooks by reference, never inline (Biome
-  enforces both). See [services and state](docs/services-and-state.md).
+  exports a getter per service, built on first call; everything else calls the
+  getters. Components never import services and bind handlers from hooks by
+  reference, never inline (Biome enforces both). See [services and state](docs/services-and-state.md).
 - A route folder is its role files (`.route.ts`, `.page.tsx`, `.queries.ts`, and the
   rest) plus one `lib/` for everything else it owns. `.route.ts` holds `meta` and
   `clientLoader` and ends with `export default XPage`. Shared code goes in a named

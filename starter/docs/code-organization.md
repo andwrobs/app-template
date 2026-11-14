@@ -8,7 +8,7 @@ directory there is a named capability.
 src/
   root.tsx                  # Document, fallback, error boundary; renders lib/app
   routes.ts
-  services.ts               # Composition root: builds every service once
+  services.ts               # Composition root: a getter per service
   lib/
     ui/                     # Design system, one module per component
       button.tsx            # A file...
@@ -24,6 +24,7 @@ src/
     meta/                   # App name and page titles
     theme/                  # Light and dark theme (Zustand) and its head script
     url-state/              # URL-backed input drafts
+    once/                   # Build on first call, for service getters
     results/                # A domain: schema and service
       results.ts            # Schema and types
       results.service.ts    # ResultsService and createResultsService
@@ -33,7 +34,7 @@ src/
       projects.route.ts     # meta, clientLoader, export default ProjectsPage
       projects.page.tsx     # The screen
       projects.route.test.tsx
-      results.queries.ts    # Query options calling resultsService
+      results.queries.ts    # Query options calling getResultsService()
       lib/                  # Everything else the route owns
         filter-bar/
           filter-bar.tsx    # Thin connected entry point
@@ -62,7 +63,7 @@ and there are no `index.ts` barrels; import from the file. Services live in a
 | Visual primitive or pattern with no app knowledge | `lib/ui` |
 | Wraps every route (providers, layout, navigation) | `lib/app` |
 | Binds Form, Table, Query, or the router to UI, shared across routes | A capability such as `lib/form`, never `lib/ui` |
-| A service | The factory in a `src/lib` domain folder; the instance in `src/services.ts` ([services and state](services-and-state.md)) |
+| A service | The factory in a `src/lib` domain folder; its getter in `src/services.ts` ([services and state](services-and-state.md)) |
 
 Tests sit next to the code they test. Folders in `lib/` are named by concept, never
 by type: no `components`, `queries`, `stores`, `types`, `utils`, or `hooks` folders.

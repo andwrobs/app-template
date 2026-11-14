@@ -61,7 +61,7 @@
 								"patterns": [
 									{
 										"group": ["**/*.service"],
-										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+										"message": "Import the service getter from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									},
 									{
 										"group": ["~/routes/**"],
@@ -85,7 +85,7 @@
 								"patterns": [
 									{
 										"group": ["**/*.service"],
-										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+										"message": "Import the service getter from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									},
 									{
 										"group": ["~/routes/**"],
@@ -138,7 +138,7 @@
 								"patterns": [
 									{
 										"group": ["**/*.service"],
-										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+										"message": "Import the service getter from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									},
 									{
 										"group": ["~/routes/**"],
@@ -172,7 +172,7 @@
 								"patterns": [
 									{
 										"group": ["**/*.service"],
-										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+										"message": "Import the service getter from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									},
 									{
 										"group": ["~/routes/**"],
@@ -208,7 +208,7 @@
 								"patterns": [
 									{
 										"group": ["**/*.service"],
-										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+										"message": "Import the service getter from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									},
 									{
 										"group": ["~/routes/**"],
@@ -241,7 +241,7 @@
 								"patterns": [
 									{
 										"group": ["**/*.service"],
-										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+										"message": "Import the service getter from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									},
 									{
 										"group": ["~/routes/**"],
@@ -277,7 +277,7 @@
 								"patterns": [
 									{
 										"group": ["**/*.service"],
-										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+										"message": "Import the service getter from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									},
 									{
 										"group": ["~/routes/**"],
@@ -310,7 +310,7 @@
 								"patterns": [
 									{
 										"group": ["**/*.service"],
-										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+										"message": "Import the service getter from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									},
 									{
 										"group": ["~/routes/**"],
@@ -350,7 +350,7 @@
 									},
 									{
 										"group": ["**/*.service"],
-										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+										"message": "Import the service getter from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									}
 								]
 							}
@@ -374,7 +374,7 @@
 									},
 									{
 										"group": ["**/*.service"],
-										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+										"message": "Import the service getter from ~/services. Only the composition root (src/services.ts) and tests import service modules."
 									}
 								],
 								"paths": {
@@ -415,11 +415,11 @@
 							"level": "error",
 							"options": {
 								"paths": {
-									"react": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps.",
-									"react-dom": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps.",
-									"react-router": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps.",
-									"zustand": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps.",
-									"~/services": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps."
+									"react": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service getters; dependencies arrive through Deps.",
+									"react-dom": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service getters; dependencies arrive through Deps.",
+									"react-router": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service getters; dependencies arrive through Deps.",
+									"zustand": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service getters; dependencies arrive through Deps.",
+									"~/services": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service getters; dependencies arrive through Deps."
 								},
 								"patterns": [
 									{
@@ -430,7 +430,7 @@
 											"**/*.queries",
 											"**/*.route"
 										],
-										"message": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps."
+										"message": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service getters; dependencies arrive through Deps."
 									}
 								]
 							}

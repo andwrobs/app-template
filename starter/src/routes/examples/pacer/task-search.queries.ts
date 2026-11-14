@@ -1,10 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
-import { taskSearchService } from "~/services";
+import { getTaskSearchService } from "~/services";
 
 export function searchQuery(term: string) {
 	return queryOptions({
 		queryKey: ["demo-search", term],
-		queryFn: ({ signal }) => taskSearchService.search(term, { signal }),
+		queryFn: ({ signal }) => getTaskSearchService().search(term, { signal }),
 		enabled: term !== "",
 	});
 }

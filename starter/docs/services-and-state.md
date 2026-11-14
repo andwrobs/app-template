@@ -16,7 +16,7 @@ flowchart TD
     components --> state
     state --> services
     services --> clients
-    root -. builds each once .-> services
+    root -. builds each on first call .-> services
 ```
 
 Components never import services. They reach them only through query options, feature
@@ -80,17 +80,17 @@ export function createTasksService({ api }: Deps): TasksService {
 ```
 
 - **Factories, not classes.** Without `this`, methods pass safely as callbacks
-  (`mutationFn: tasksService.complete`).
+  (`mutationFn: getTasksService().complete`).
 - **An explicit type for every service.** It's the contract, and the compiler flags
   drift. Name the file `<thing>.service.ts`, the type `XService`, and the factory
   `createXService`. A stand-in for the same type gets its own factory,
   such as `createDemoXService`.
 - **One `Deps` object, destructured in the signature,** so every requirement shows at
   a glance.
-- **`Deps` lists types, never factories or imported instances:**
+- **`Deps` lists types, never factories or getters:**
   `type Deps = { api: ApiClient; ledger: LedgerService }`.
 - **Services import no React, router, TanStack, Zustand, UI, routes, or service
-  instances.** Anything they need arrives through `Deps`. Biome enforces this.
+  getters.** Anything they need arrives through `Deps`. Biome enforces this.
 - **Stateless, not pure.** I/O and side effects are fine; state kept between calls
   isn't.
 - **Fixed file anatomy:** the `XService` type, `Deps`, and the factory, nothing else.
@@ -103,8 +103,9 @@ export function createTasksService({ api }: Deps): TasksService {
 
 ## Composition root
 
-`src/services.ts` builds every service once and exports the instances. Services get
-their dependencies at creation; everything else imports the instances.
+`src/services.ts` exports one getter per service. A getter builds its service on the
+first call and returns the same one afterwards, so nothing is built when the module
+loads. Services get their dependencies at creation; everything else calls the getters.
 
 ```ts
 // src/services.ts
@@ -112,24 +113,31 @@ import { createApiClient } from "~/lib/api/api";
 import { env } from "~/lib/env/env";
 import { createLedgerService } from "~/lib/ledger/ledger.service";
 import { createBillingService } from "~/lib/billing/billing.service";
+import { once } from "~/lib/once/once";
 
-const api = createApiClient({ baseUrl: env.VITE_API_URL });
+const getApi = once(() => createApiClient({ baseUrl: env.VITE_API_URL }));
 
-export const ledgerService = createLedgerService({ api });
-export const billingService = createBillingService({ api, ledger: ledgerService });
+export const getLedgerService = once(() =>
+	createLedgerService({ api: getApi() }),
+);
+export const getBillingService = once(() =>
+	createBillingService({ api: getApi(), ledger: getLedgerService() }),
+);
 ```
 
 - **One composition root.** Outside tests, it's the only module that imports a
   factory. Biome enforces this.
 - **Factories stay with their domain** in a `src/lib` folder, beside its schema;
-  only the instances live here.
-- **Build in dependency order.** A service that depends on another is created after
-  it and receives the instance through `Deps`.
+  only the getters live here.
+- **Every export is `once(() => createXService(deps))`.** No service or client is
+  built at module level.
+- **A service that depends on another** calls its getter inside its own and passes
+  the result through `Deps`.
 - **Never call a factory in a component or hook.** It would create a new instance on
   every render.
-- **Consumers import instances:** `import { tasksService } from "~/services"`. Query
-  options, feature and action hooks, and stores import instances and never construct
-  services; components never import them.
+- **Consumers call getters:** `import { getTasksService } from "~/services"`. Query
+  options, feature and action hooks, and stores call them where the service is used,
+  never at module level, and never construct services; components never import them.
 - **Swap implementations here.** A fake server, fixture data, or a demo mode changes
   this file, not its consumers.
 
@@ -147,7 +155,7 @@ Every kind of state has one owner, and data never lives in two.
 | Shared client state no library owns | Zustand stores | The theme, a draft that spans routes |
 | One component's state | `useState` / `useReducer` | An open popover, hover, focus |
 
-- **Query functions call services:** `queryFn: ({ signal }) => tasksService.list({
+- **Query functions call services:** `queryFn: ({ signal }) => getTasksService().list({
   signal })`. Services know nothing about Query.
 - **Each domain's query options and keys live in its `<thing>.queries.ts`.** Loaders
   and components share the options. Add a key factory once there's more than one
@@ -162,7 +170,7 @@ Every kind of state has one owner, and data never lives in two.
 ```ts
 // tasks.queries.ts
 import { queryOptions } from "@tanstack/react-query";
-import { tasksService } from "~/services";
+import { getTasksService } from "~/services";
 
 export const taskKeys = {
 	all: ["tasks"] as const,
@@ -171,7 +179,7 @@ export const taskKeys = {
 
 export const tasksQuery = queryOptions({
 	queryKey: taskKeys.list(),
-	queryFn: ({ signal }) => tasksService.list({ signal }),
+	queryFn: ({ signal }) => getTasksService().list({ signal }),
 });
 ```
 
@@ -180,7 +188,7 @@ export const tasksQuery = queryOptions({
 export function useTaskActions() {
 	const queryClient = useQueryClient();
 	const complete = useMutation({
-		mutationFn: tasksService.complete,
+		mutationFn: getTasksService().complete,
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: taskKeys.all }),
 	});
 	return { completeTask: complete.mutate, isCompleting: complete.isPending };
@@ -219,7 +227,7 @@ export const useRequestDraftStore = create<RequestDraftState>()((set) => ({
   decisions belong in services, and remote results belong in Query.
 - **Components subscribe with selectors** (`useThemeStore((state) => state.theme)`),
   never the whole store.
-- **Stores import service instances** from `~/services` when an action needs one.
+- **Stores call service getters** from `~/services` inside the action that needs one.
   Services never import stores.
 - **Don't move a local workflow into a store** just to empty a component.
 
@@ -262,7 +270,7 @@ come from hooks that close over their arguments.
 ```tsx
 // lib/use-task-actions.ts
 export function useTaskActions(taskId: string) {
-	const exportCsv = useCallback(() => tasksService.exportCsv(taskId), [taskId]);
+	const exportCsv = useCallback(() => getTasksService().exportCsv(taskId), [taskId]);
 	return { exportCsv };
 }
 
@@ -326,9 +334,9 @@ allows them.
 | Layer | How to test | What to fake |
 | --- | --- | --- |
 | Services | Call the factory with fake `Deps`; assert on the returned object | `ApiClient`, settings, and other services, typed as their types |
-| Query options | Through the route with `renderRoute` and a cleared `QueryClient` | `fetch`, or the service instance with `vi.spyOn` |
-| Stores | Call actions and assert on `getState()`; `reset()` in `beforeEach` | Service instances with `vi.spyOn` |
-| Action hooks | `renderHook`, call the returned handler, assert on the service call | The service instance with `vi.spyOn` |
+| Query options | Through the route with `renderRoute` and a cleared `QueryClient` | `fetch`, or the service with `vi.spyOn(getXService(), ...)` |
+| Stores | Call actions and assert on `getState()`; `reset()` in `beforeEach` | Services with `vi.spyOn` |
+| Action hooks | `renderHook`, call the returned handler, assert on the service call | The service with `vi.spyOn` |
 | Feature and coordinating hooks | Through the component that uses them, or `renderHook` | Services with `vi.spyOn`; reset stores |
 | Routes and components | Rendered behavior with `renderRoute`; handler logic is covered in its hook | `fetch`, or services with `vi.spyOn` |
 
@@ -350,7 +358,7 @@ it("lists tasks, passing the caller's signal to the client", async () => {
 ```ts
 // useTaskActions.test.ts
 it("exports the task it was given", () => {
-	const exportCsv = vi.spyOn(tasksService, "exportCsv").mockResolvedValue();
+	const exportCsv = vi.spyOn(getTasksService(), "exportCsv").mockResolvedValue();
 	const { result } = renderHook(() => useTaskActions("T-1"));
 
 	result.current.exportCsv();
@@ -379,7 +387,7 @@ Check, in order: dependency direction, service imports in components, handlers t
 are inline or declared in a component, by-reference handlers with loose parameters, remote data
 in stores, decisions in store actions, store-to-store writes or subscriptions,
 factories used outside the composition root, and missing `XService` types or `Deps`
-that hold factories or instances. Report each violation with its rule and a concrete fix.
+that hold factories or getters. Report each violation with its rule and a concrete fix.
 
 ## Examples
 

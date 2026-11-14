@@ -6,6 +6,8 @@
   private code under `lib/`, kebab-case files, `.queries.ts`, `type` over `interface`,
   no barrels, and Biome rules for each.
 - Example services and schemas live in `src/lib/demo`; `--no-examples` removes it.
+- `src/services.ts` exports getters (`getXService()`), built on first call, in place
+  of module-level instances. `lib/once` provides the helper.
 - Page titles from `lib/meta`, focus on the new page's heading after navigation, a
   skip link, and styled not-found and error pages.
 - `SidebarLayout`, a one-line alternative to the header layout, sharing

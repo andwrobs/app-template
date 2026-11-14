@@ -13,7 +13,7 @@ actions. Query owns remote state: caching, freshness, deduplication, and invalid
 
 - Define query options beside their owner and use them in both `clientLoader` and
   `useQuery`, through the one client in `src/lib/query/client.ts`. Tests use their
-  own caches. Each `queryFn` calls a service instance with Query's `signal`.
+  own caches. Each `queryFn` calls a service getter with Query's `signal`.
 - `fetchQuery` in a loader reuses fresh data and waits for stale data.
   `ensureQueryData` returns stale data immediately, so use it only when that's what
   you want. `prefetchQuery` is for speculative warming, and its errors don't reach
@@ -85,7 +85,7 @@ Use Router's NavLink for navigation state; the
 
 ## Examples
 
-The examples read fixtures through a `demoApi` client, and the form and autosave use
+The examples read fixtures through a demo client, and the form and autosave use
 fake servers (`createDemo…Service`); `src/services.ts` wires both.
 
 - `/examples/query`: a Zod-validated JSON fixture with empty and error cases. It isn't

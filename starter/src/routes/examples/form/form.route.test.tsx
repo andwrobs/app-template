@@ -1,11 +1,11 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import type { UserEvent } from "@testing-library/user-event";
 import { beforeEach, expect, it, vi } from "vitest";
-import { projectRequestService } from "~/services";
+import { getProjectRequestService } from "~/services";
 import { renderRoute } from "../../../../test-utils/render-route";
 import FormPage, { meta } from "./form.route";
 
-const submit = vi.spyOn(projectRequestService, "submit");
+const submit = vi.spyOn(getProjectRequestService(), "submit");
 
 beforeEach(() => {
 	submit.mockReset().mockImplementation(async (request, scenario) => {

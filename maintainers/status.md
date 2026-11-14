@@ -37,7 +37,9 @@ app-reference, where npm 10 crashes in arborist.
 Example services and their schemas then moved from route `lib/` folders to
 `src/lib/demo`, so `src/services.ts` imports no route code and the cross-route rule
 covers it; app-reference conventions now say services live in a `src/lib` domain
-folder. Open: `npm ci` in `starter/` lets lefthook
+folder. `src/services.ts` in both then switched from module-level instances to
+getters (`getXService = once(() => createXService(deps))`), built on first call.
+Open: `npm ci` in `starter/` lets lefthook
 write an example `lefthook.yml` at the repository root; delete it.
 
 ## Verified state

@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 import { safeReturnTo } from "~/lib/session/sign-in-redirect";
-import { sessionService } from "~/services";
+import { getSessionService } from "~/services";
 
 export function SignInPage() {
 	const [search] = useSearchParams();
 	const signIn = useMutation({
-		mutationFn: sessionService.signIn,
+		mutationFn: getSessionService().signIn,
 		// A page load, so the app starts clean for whoever just signed in.
 		onSuccess: () => window.location.assign(safeReturnTo(search.get("returnTo"))),
 	});

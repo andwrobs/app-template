@@ -8,7 +8,7 @@ import {
 	projectRequestSchema,
 } from "~/lib/demo/project-request";
 import { useAppForm } from "~/lib/form/app-form";
-import { projectRequestService } from "~/services";
+import { getProjectRequestService } from "~/services";
 
 // Owns the request workflow. TanStack Form owns values and validation; the
 // mutation owns submission, its failure, and the saved result. A submit parses
@@ -19,7 +19,7 @@ export function useProjectRequestForm() {
 
 	const mutation = useMutation({
 		mutationFn: (request: ProjectRequest) =>
-			projectRequestService.submit(request, scenario),
+			getProjectRequestService().submit(request, scenario),
 	});
 
 	const form = useAppForm({

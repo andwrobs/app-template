@@ -1,7 +1,7 @@
 import { act, fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { searchLatency } from "~/lib/demo/task-search";
-import { noteService } from "~/services";
+import { getNoteService } from "~/services";
 import { renderRoute } from "../../../../test-utils/render-route";
 import { searchWait } from "./lib/debounced-search/use-debounced-search";
 import { saveInterval } from "./lib/throttled-autosave/use-throttled-autosave";
@@ -10,7 +10,7 @@ import PacerPage, { meta } from "./pacer.route";
 const server = { inFlight: 0, maxInFlight: 0, stored: [] as string[] };
 
 const save = vi
-	.spyOn(noteService, "save")
+	.spyOn(getNoteService(), "save")
 	.mockImplementation(async (text, serverFails) => {
 		server.inFlight++;
 		server.maxInFlight = Math.max(server.maxInFlight, server.inFlight);

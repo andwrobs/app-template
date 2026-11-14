@@ -60,7 +60,11 @@ const exampleLineFiles = [
 	"src/lib/app/nav.ts",
 	"src/routes/home/home.page.tsx",
 ];
-const exampleLine = /\/examples\/|lib\/demo\/|exampleRoutes|demoApi|createDemo/;
+const exampleLine = /\/examples\/|lib\/demo\/|exampleRoutes/;
+// Files whose examples are one trailing block, cut from this line to the end.
+const exampleBlocks = {
+	"src/services.ts": "// Services for src/routes/examples/",
+};
 const exampleSectionFiles = [
 	"README.md",
 	"docs/code-organization.md",
@@ -219,9 +223,10 @@ function removeExamples(destination, { log }) {
 	}
 	for (const file of exampleLineFiles) {
 		const filePath = path.join(destination, file);
-		const kept = readFileSync(filePath, "utf8")
-			.split("\n")
-			.filter((line) => !exampleLine.test(line));
+		let text = readFileSync(filePath, "utf8");
+		const block = text.indexOf(exampleBlocks[file]);
+		if (block !== -1) text = `${text.slice(0, block).trimEnd()}\n`;
+		const kept = text.split("\n").filter((line) => !exampleLine.test(line));
 		writeFileSync(filePath, kept.join("\n"));
 	}
 	for (const file of exampleSectionFiles) {

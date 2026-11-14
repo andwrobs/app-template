@@ -1,6 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { setViewer } from "~/lib/preferences/viewer-storage";
-import { sessionService } from "~/services";
+import { getSessionService } from "~/services";
 import { sessionOptions } from "./session.queries";
 import { announceSignOut, goToSignIn } from "./sign-in-redirect";
 
@@ -12,7 +12,7 @@ export async function requireSession(queryClient: QueryClient) {
 }
 
 export async function signOut() {
-	await sessionService.signOut();
+	await getSessionService().signOut();
 	announceSignOut();
 	goToSignIn();
 }

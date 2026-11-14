@@ -36,13 +36,13 @@ export function createSessionService({ request }: ApiClient) {
 ```ts
 // src/lib/session/session.queries.ts
 import { queryOptions } from "@tanstack/react-query";
-import { sessionService } from "~/services";
+import { getSessionService } from "~/services";
 
 /** Who is signed in. Server data like any other, so Query owns it. */
 export function sessionOptions() {
 	return queryOptions({
 		queryKey: ["session"],
-		queryFn: ({ signal }) => sessionService.current(signal),
+		queryFn: ({ signal }) => getSessionService().current(signal),
 		staleTime: 5 * 60_000,
 	});
 }
@@ -52,7 +52,7 @@ export function sessionOptions() {
 // src/lib/session/session.ts
 import type { QueryClient } from "@tanstack/react-query";
 import { setViewer } from "~/lib/preferences/viewer-storage";
-import { sessionService } from "~/services";
+import { getSessionService } from "~/services";
 import { sessionOptions } from "./session.queries";
 import { announceSignOut, goToSignIn } from "./sign-in-redirect";
 
@@ -64,7 +64,7 @@ export async function requireSession(queryClient: QueryClient) {
 }
 
 export async function signOut() {
-	await sessionService.signOut();
+	await getSessionService().signOut();
 	announceSignOut();
 	goToSignIn();
 }
@@ -153,12 +153,12 @@ Signing in is a page load too, so the app starts clean for whoever signed in:
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 import { safeReturnTo } from "~/lib/session/sign-in-redirect";
-import { sessionService } from "~/services";
+import { getSessionService } from "~/services";
 
 export function SignInPage() {
 	const [search] = useSearchParams();
 	const signIn = useMutation({
-		mutationFn: sessionService.signIn,
+		mutationFn: getSessionService().signIn,
 		// A page load, so the app starts clean for whoever just signed in.
 		onSuccess: () => window.location.assign(safeReturnTo(search.get("returnTo"))),
 	});

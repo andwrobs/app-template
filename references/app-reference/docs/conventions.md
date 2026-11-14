@@ -23,8 +23,9 @@ Part of the [app reference](README.md).
   until a component or capability has several files, then in a kebab-case
   folder: `lib/details/`. No `components/` folder.
 - **Services live in a `src/lib` domain folder,** beside the domain's schema
-  (`src/lib/tasks/tasks.service.ts`). Only `src/services.ts`, which builds them,
-  and tests import a service module. Nothing outside a route imports its files.
+  (`src/lib/tasks/tasks.service.ts`). `src/services.ts` exports a getter for each
+  (`getTaskService`) that builds it on the first call; no service is built at
+  module load. Only that file and tests import a service module. Nothing outside a route imports its files.
 - **Named exports by default.** Framework Mode requires default exports for its
   route components and configuration files; those are deliberate exceptions.
   For a separate page, explicitly import the named component in the route module,

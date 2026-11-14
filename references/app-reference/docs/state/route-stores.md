@@ -174,7 +174,7 @@ import { classifyFailure } from "~/lib/api/api-error";
 import { detailsOpen } from "~/lib/preferences/settings";
 import { taskKeys } from "~/lib/tasks/tasks.queries";
 import { matchesMedia, subscribeToMedia } from "~/lib/ui/media-query";
-import { taskService } from "~/services";
+import { getTaskService } from "~/services";
 import {
 	createProjectStore,
 	type ProjectDeps,
@@ -190,7 +190,7 @@ function projectDeps(queryClient: QueryClient, projectId: string): ProjectDeps {
 		newKey: () => crypto.randomUUID(),
 		async sendArchive(intent) {
 			try {
-				const { archived } = await taskService.archive(intent);
+				const { archived } = await getTaskService().archive(intent);
 				return { status: "done", archived };
 			} catch (error) {
 				return classifyFailure(error);

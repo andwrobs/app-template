@@ -94,21 +94,24 @@ export function createTaskService({ request }: ApiClient) {
 export type TaskService = ReturnType<typeof createTaskService>;
 ```
 
-**The composition root** builds each service once. Everything else imports the
-instances.
+**The composition root** exports one getter per service. A getter builds its
+service on the first call, so nothing is built when the module loads. Everything
+else calls the getters.
 
 ```ts
 // src/services.ts
 import { request } from "~/lib/api/api-client";
+import { once } from "~/lib/once/once";
 import { createSessionService } from "~/lib/session/session.service";
 import { createTaskService } from "~/lib/tasks/tasks.service";
 
-// The composition root for services: each is built once, here. Everything
-// else imports these instances.
+// The composition root for services. Each export is a getter that builds its
+// service on the first call; nothing is built when this module loads.
+// Everything else calls these getters.
 const api = { request };
 
-export const sessionService = createSessionService(api);
-export const taskService = createTaskService(api);
+export const getSessionService = once(() => createSessionService(api));
+export const getTaskService = once(() => createTaskService(api));
 ```
 
 ## Errors
@@ -279,13 +282,13 @@ export const taskKeys = {
 import { queryOptions } from "@tanstack/react-query";
 import { taskKeys } from "~/lib/tasks/tasks.queries";
 import type { TaskOrder } from "~/lib/tasks/tasks.service";
-import { taskService } from "~/services";
+import { getTaskService } from "~/services";
 
 /** The project's tasks. The loader and the page both use it, so they share one cache entry. */
 export function projectTasksOptions(projectId: string, order: TaskOrder) {
 	return queryOptions({
 		queryKey: taskKeys.list(projectId, order),
-		queryFn: ({ signal }) => taskService.list(projectId, order, signal),
+		queryFn: ({ signal }) => getTaskService().list(projectId, order, signal),
 	});
 }
 ```
@@ -325,7 +328,7 @@ cache is refreshed after a write can be found by file name.
 ```ts
 // src/lib/tasks/tasks.mutations.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { taskService } from "~/services";
+import { getTaskService } from "~/services";
 import { taskKeys } from "./tasks.queries";
 import type { Task, TaskOrder } from "./tasks.service";
 
@@ -333,7 +336,7 @@ import type { Task, TaskOrder } from "./tasks.service";
 export function useRenameTask(projectId: string) {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: taskService.rename,
+		mutationFn: getTaskService().rename,
 		// Whatever happened, show what the server holds.
 		onSettled: () =>
 			queryClient.invalidateQueries({ queryKey: taskKeys.project(projectId) }),
@@ -348,7 +351,7 @@ export function useStarTask(projectId: string, order: TaskOrder) {
 	const queryClient = useQueryClient();
 	const key = taskKeys.list(projectId, order);
 	return useMutation({
-		mutationFn: taskService.star,
+		mutationFn: getTaskService().star,
 		async onMutate({ taskId, starred }) {
 			// A refetch already in flight would overwrite the optimistic value.
 			await queryClient.cancelQueries({ queryKey: key });

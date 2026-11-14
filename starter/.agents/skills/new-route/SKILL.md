@@ -16,7 +16,7 @@ src/routes/<feature>/
   <feature>.route.ts         # meta, clientLoader, export default <Feature>Page
   <feature>.page.tsx         # the screen
   <feature>.route.test.tsx
-  <thing>.queries.ts         # queryOptions calling the service instance
+  <thing>.queries.ts         # queryOptions calling the service getter
   lib/                       # everything else the route owns
     <name>/                  # a part with several files
       <name>.tsx             # connected entry: binds private hook to view
@@ -48,11 +48,12 @@ route's folder (Biome enforces this).
    schema and types in `src/lib/<thing>/<thing>.ts`. In
    `src/lib/<thing>/<thing>.service.ts`, export `ThingsService`
    and `createThingsService({ api }: Deps)`, which calls
-   `api.request(path, schema, { signal })`. In `src/services.ts`, build it once and
-   export `thingsService`; if the file has no client yet, add
-   `const api = createApiClient({ baseUrl: env.VITE_API_URL })`. In
+   `api.request(path, schema, { signal })`. In `src/services.ts`, export
+   `getThingsService = once(() => createThingsService({ api: getApi() }))`; if the
+   file has no client yet, add
+   `const getApi = once(() => createApiClient({ baseUrl: env.VITE_API_URL }))`. In
    `<thing>.queries.ts`, export `queryOptions` whose `queryFn` calls
-   `thingsService.list({ signal })`.
+   `getThingsService().list({ signal })`.
 2. **Route module and page.**
 
    ```ts

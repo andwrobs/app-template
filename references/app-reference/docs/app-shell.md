@@ -14,7 +14,7 @@ Everything else imports the result and never builds its own.
 | --- | --- | --- |
 | Query client and router | `src/app.tsx` | Created once and passed down; nothing imports a shared instance |
 | Providers | `src/lib/app/app-providers.tsx`, rendered by `src/app.tsx` | A new app-wide provider goes here and nowhere else |
-| Services | `src/services.ts` | Only this file and tests import a service factory |
+| Services | `src/services.ts` | Exports a getter per service, built on first call. Only this file and tests import a service factory |
 | Build-time settings | `src/lib/app/env.ts` | Nothing else reads `import.meta.env`, except `import.meta.env.DEV` |
 
 Framework Mode uses `root.tsx` under `appDirectory` for the root document,
@@ -78,7 +78,7 @@ instances of app-wide UI (the notices, the confirm dialog).
 src/
   app.tsx                 # composition root: Query client, router, providers
   routes.ts               # every route
-  services.ts             # every service instance
+  services.ts             # a getter for every service
   lib/                    # shared by more than one route, or app-wide
     app/                  # wraps every route: providers, env, errors, focus, progress
     api/                  # the API client and its error type
@@ -87,6 +87,7 @@ src/
     preferences/          # settings and the storage adapter
     route-store/          # the kit for route stores
     focus/                # focus scopes
+    once/                 # build on first call, for service getters
     ui/                   # design system: components with no app knowledge
     <domain>/             # tasks/, projects/: service, query options, shared hooks
   routes/
