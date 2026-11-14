@@ -6,7 +6,8 @@ description: Change this starter itself (source, docs, or agent workflow) or pic
 # Starter task
 
 Read `maintainers/README.md` and `maintainers/status.md`, plus the backlog item and the
-docs it names if there is one. Root `AGENTS.md` still governs the work itself.
+docs it names if there is one. The repository root `AGENTS.md` and `starter/AGENTS.md`
+govern the work itself.
 
 1. Check the source and lockfile instead of assuming. A dependency is done only if
    status says so. Split L items. If another branch or worktree owns the work,
