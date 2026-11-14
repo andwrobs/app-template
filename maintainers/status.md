@@ -39,8 +39,9 @@ Example services and their schemas then moved from route `lib/` folders to
 covers it; app-reference conventions now say services live in a `src/lib` domain
 folder. `src/services.ts` in both then switched from module-level instances to
 getters (`getXService = once(() => createXService(deps))`), built on first call.
-Open: `npm ci` in `starter/` lets lefthook
-write an example `lefthook.yml` at the repository root; delete it.
+The repository root has its own `lefthook.yml`, which runs the starter's Biome check
+on staged starter files; `node maintainers/check-upstream.mjs` ran live against the
+new paths.
 
 ## Verified state
 
