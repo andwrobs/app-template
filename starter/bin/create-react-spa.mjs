@@ -58,7 +58,7 @@ const exampleLineFiles = [
 	"src/routes.ts",
 	"src/services.ts",
 	"src/lib/app/nav.ts",
-	"src/routes/home/home.route.tsx",
+	"src/routes/home/home.page.tsx",
 ];
 const exampleLine = /\/examples\/|exampleRoutes|demoApi|createDemo/;
 const exampleSectionFiles = [

@@ -1,6 +1,6 @@
 ---
 name: new-route
-description: Add a page or feature route to this app in its house style (route folder, title, a service built in the composition root, Query-backed clientLoader, encapsulated features with thin connected components, tests beside the code, routes.ts, and nav). Use whenever you add a screen; use react-router for other route work.
+description: Add a page or feature route to this app in its house style (route folder with .route.ts, .page.tsx, and lib/, title, a service built in the composition root, Query-backed clientLoader, encapsulated features with thin connected components, tests beside the code, routes.ts, and nav). Use whenever you add a screen; use react-router for other route work.
 ---
 
 # New route
@@ -13,21 +13,25 @@ apply them. Use the `react-router` skill for API details.
 
 ```text
 src/routes/<feature>/
-  <feature>.route.tsx        # meta, clientLoader, default export
+  <feature>.route.ts         # meta, clientLoader, export default <Feature>Page
+  <feature>.page.tsx         # the screen
   <feature>.route.test.tsx
-  <thing>.ts                 # Zod schema and types, if it loads data
-  <thing>.service.ts         # ThingsService and createThingsService
-  <thing>.service.test.ts
-  <thing>.query.ts           # queryOptions calling the service instance
-  components/<Name>/         # only for parts worth splitting out
-    <Name>.tsx               # connected entry: binds private hook to view
-    <Name>View.tsx            # renders state, emits intent
-    use<Name>.ts             # owns workflow and library integration
-    <Name>.test.tsx
-    index.ts                 # exports the connected entry, not its internals
+  <thing>.queries.ts         # queryOptions calling the service instance
+  lib/                       # everything else the route owns
+    <thing>.ts               # Zod schema and types, if it loads data
+    <thing>.service.ts       # ThingsService and createThingsService
+    <thing>.service.test.ts
+    <name>/                  # a part with several files
+      <name>.tsx             # connected entry: binds private hook to view
+      <name>-view.tsx        # renders state, emits intent
+      use-<name>.ts          # owns workflow and library integration
+      <name>.test.tsx
 ```
 
-Import other features only through `src/lib`, never from another route's folder.
+Role files sit at the route root; everything else goes in `lib/`, flat until a part
+has several files. kebab-case file names, named exports, `type` not `interface`, no
+`index.ts` barrels. Import other features only through `src/lib`, never from another
+route's folder (Biome enforces this).
 
 ## Steps
 
@@ -40,21 +44,22 @@ Import other features only through `src/lib`, never from another route's folder.
    subscription is sufficient.
 
    **Data** follows [services and state](../../../docs/services-and-state.md). Put the
-   schema and types in `<thing>.ts`. In `<thing>.service.ts`, export `ThingsService`
+   schema and types in `lib/<thing>.ts`. In `lib/<thing>.service.ts`, export `ThingsService`
    and `createThingsService({ api }: Deps)`, which calls
    `api.request(path, schema, { signal })`. In `src/services.ts`, build it once and
    export `thingsService`; if the file has no client yet, add
    `const api = createApiClient({ baseUrl: env.VITE_API_URL })`. In
-   `<thing>.query.ts`, export `queryOptions` whose `queryFn` calls
+   `<thing>.queries.ts`, export `queryOptions` whose `queryFn` calls
    `thingsService.list({ signal })`.
-2. **Route module.**
+2. **Route module and page.**
 
-   ```tsx
-   import { useQuery } from "@tanstack/react-query";
+   ```ts
+   // things.route.ts
    import { pageTitle } from "~/lib/meta/title";
    import { queryClient } from "~/lib/query/client";
    import type { Route } from "./+types/things.route";
-   import { thingsQuery } from "./things.query";
+   import { ThingsPage } from "./things.page";
+   import { thingsQuery } from "./things.queries";
 
    export const meta: Route.MetaFunction = () => [{ title: pageTitle("Things") }];
 
@@ -63,7 +68,15 @@ Import other features only through `src/lib`, never from another route's folder.
    	return null;
    }
 
-   export default function ThingsRoute() {
+   export default ThingsPage;
+   ```
+
+   ```tsx
+   // things.page.tsx
+   import { useQuery } from "@tanstack/react-query";
+   import { thingsQuery } from "./things.queries";
+
+   export function ThingsPage() {
    	const { data } = useQuery(thingsQuery);
    	return (
    		<main className="mx-auto w-full max-w-5xl space-y-6 px-4 py-12 sm:px-6">
@@ -74,9 +87,13 @@ Import other features only through `src/lib`, never from another route's folder.
    }
    ```
 
-   One `<main>` with one `<h1>`: route focus lands on it. Export an `ErrorBoundary`
-   when the loader can fail, with a way to recover.
-3. **Register** `route("things", "./routes/things/things.route.tsx")` in
+   Import the page, then `export default ThingsPage`: the compiler adds route props
+   only to a default export declaration. A page that reads props types them with
+   `Route.ComponentProps` from `./+types/things.route`. One `<main>` with one `<h1>`:
+   route focus lands on it. When the loader can fail, write `ThingsErrorBoundary` in
+   the page, with a way to recover, and add
+   `export const ErrorBoundary = ThingsErrorBoundary;` to the route module.
+3. **Register** `route("things", "./routes/things/things.route.ts")` in
    `src/routes.ts`, above the `*` route, then run `npx react-router typegen`.
 4. **Nav.** For a top-level page, add `["/things", "Things", SomeIcon]` to
    `src/lib/app/nav.ts`.

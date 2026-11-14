@@ -24,6 +24,22 @@
 			"recommended": true,
 			"suspicious": {
 				"noUnknownAtRules": "off"
+			},
+			"style": {
+				"useFilenamingConvention": {
+					"level": "error",
+					"options": {
+						"filenameCases": ["kebab-case"],
+						"requireAscii": true
+					}
+				},
+				"useConsistentTypeDefinitions": {
+					"level": "error",
+					"options": {
+						"style": "type"
+					}
+				},
+				"noDefaultExport": "error"
 			}
 		}
 	},
@@ -46,6 +62,10 @@
 									{
 										"group": ["**/*.service"],
 										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									},
+									{
+										"group": ["~/routes/**"],
+										"message": "A route's files are imported only from inside that route, by relative path. Shared code goes in a named src/lib capability."
 									}
 								]
 							}
@@ -66,6 +86,219 @@
 									{
 										"group": ["**/*.service"],
 										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									},
+									{
+										"group": ["~/routes/**"],
+										"message": "A route's files are imported only from inside that route, by relative path. Shared code goes in a named src/lib capability."
+									}
+								],
+								"paths": {
+									"~/services": "Components never import services. Reach them through query options, a feature or action hook, or a store action."
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/routes/**/*.ts",
+				"!src/routes/**/lib/**",
+				"!**/*.service.ts",
+				"!**/*.test.ts",
+				"!**/*.test.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["**/*.service"],
+										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									},
+									{
+										"group": ["~/routes/**"],
+										"message": "A route's files are imported only from inside that route, by relative path. Shared code goes in a named src/lib capability."
+									},
+									{
+										"group": ["../**"],
+										"message": "Files outside a route never import its lib/ or role files. Shared code goes in a named src/lib capability."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/routes/**/*.tsx",
+				"!src/routes/**/lib/**",
+				"!**/*.service.ts",
+				"!**/*.test.ts",
+				"!**/*.test.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["**/*.service"],
+										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									},
+									{
+										"group": ["~/routes/**"],
+										"message": "A route's files are imported only from inside that route, by relative path. Shared code goes in a named src/lib capability."
+									},
+									{
+										"group": ["../**"],
+										"message": "Files outside a route never import its lib/ or role files. Shared code goes in a named src/lib capability."
+									}
+								],
+								"paths": {
+									"~/services": "Components never import services. Reach them through query options, a feature or action hook, or a store action."
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/routes/**/lib/*.ts",
+				"!**/*.service.ts",
+				"!**/*.test.ts",
+				"!**/*.test.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["**/*.service"],
+										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									},
+									{
+										"group": ["~/routes/**"],
+										"message": "A route's files are imported only from inside that route, by relative path. Shared code goes in a named src/lib capability."
+									},
+									{
+										"group": ["../../**"],
+										"message": "Files outside a route never import its lib/ or role files. Shared code goes in a named src/lib capability."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/routes/**/lib/*.tsx",
+				"!**/*.service.ts",
+				"!**/*.test.ts",
+				"!**/*.test.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["**/*.service"],
+										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									},
+									{
+										"group": ["~/routes/**"],
+										"message": "A route's files are imported only from inside that route, by relative path. Shared code goes in a named src/lib capability."
+									},
+									{
+										"group": ["../../**"],
+										"message": "Files outside a route never import its lib/ or role files. Shared code goes in a named src/lib capability."
+									}
+								],
+								"paths": {
+									"~/services": "Components never import services. Reach them through query options, a feature or action hook, or a store action."
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/routes/**/lib/*/*.ts",
+				"!**/*.service.ts",
+				"!**/*.test.ts",
+				"!**/*.test.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["**/*.service"],
+										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									},
+									{
+										"group": ["~/routes/**"],
+										"message": "A route's files are imported only from inside that route, by relative path. Shared code goes in a named src/lib capability."
+									},
+									{
+										"group": ["../../../**"],
+										"message": "Files outside a route never import its lib/ or role files. Shared code goes in a named src/lib capability."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/routes/**/lib/*/*.tsx",
+				"!**/*.service.ts",
+				"!**/*.test.ts",
+				"!**/*.test.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["**/*.service"],
+										"message": "Import the service instance from ~/services. Only the composition root (src/services.ts) and tests import service modules."
+									},
+									{
+										"group": ["~/routes/**"],
+										"message": "A route's files are imported only from inside that route, by relative path. Shared code goes in a named src/lib capability."
+									},
+									{
+										"group": ["../../../**"],
+										"message": "Files outside a route never import its lib/ or role files. Shared code goes in a named src/lib capability."
 									}
 								],
 								"paths": {
@@ -174,7 +407,7 @@
 											"@tanstack/**",
 											"~/lib/ui/**",
 											"~/routes/**",
-											"**/*.query",
+											"**/*.queries",
 											"**/*.route"
 										],
 										"message": "Services hold I/O and domain logic. They import no React, router, TanStack, Zustand, UI, routes, or service instances; dependencies arrive through Deps."
@@ -228,6 +461,23 @@
 					},
 					"suspicious": {
 						"noArrayIndexKey": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/**/*.route.ts",
+				"src/root.tsx",
+				"src/routes.ts",
+				"src/routes/**/routes.ts",
+				"vite.config.ts",
+				"react-router.config.ts"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noDefaultExport": "off"
 					}
 				}
 			}

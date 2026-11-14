@@ -3,7 +3,7 @@ import type { UserEvent } from "@testing-library/user-event";
 import { beforeEach, expect, it, vi } from "vitest";
 import { projectRequestService } from "~/services";
 import { renderRoute } from "../../../../test-utils/render-route";
-import FormRoute, { meta } from "./form.route";
+import FormPage, { meta } from "./form.route";
 
 const submit = vi.spyOn(projectRequestService, "submit");
 
@@ -16,7 +16,7 @@ beforeEach(() => {
 });
 
 function renderForm(url = "/examples/form") {
-	return renderRoute([{ path: "/examples/form", Component: FormRoute, meta }], {
+	return renderRoute([{ path: "/examples/form", Component: FormPage, meta }], {
 		initialEntries: [url],
 	});
 }

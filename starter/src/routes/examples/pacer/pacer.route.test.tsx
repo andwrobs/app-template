@@ -2,10 +2,10 @@ import { act, fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { noteService } from "~/services";
 import { renderRoute } from "../../../../test-utils/render-route";
-import { searchWait } from "./components/DebouncedSearch/useDebouncedSearch";
-import { saveInterval } from "./components/ThrottledAutosave/useThrottledAutosave";
-import PacerRoute, { meta } from "./pacer.route";
-import { searchLatency } from "./task-search";
+import { searchWait } from "./lib/debounced-search/use-debounced-search";
+import { searchLatency } from "./lib/task-search";
+import { saveInterval } from "./lib/throttled-autosave/use-throttled-autosave";
+import PacerPage, { meta } from "./pacer.route";
 
 const server = { inFlight: 0, maxInFlight: 0, stored: [] as string[] };
 
@@ -56,7 +56,7 @@ afterEach(() => {
 function renderPacer(initialEntries = ["/examples/pacer"]) {
 	return renderRoute(
 		[
-			{ path: "/examples/pacer", Component: PacerRoute, meta },
+			{ path: "/examples/pacer", Component: PacerPage, meta },
 			{ path: "/other", Component: () => <p>Other page</p> },
 		],
 		{ initialEntries, userOptions: { advanceTimers: vi.advanceTimersByTime } },

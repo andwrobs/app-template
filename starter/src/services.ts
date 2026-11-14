@@ -1,9 +1,9 @@
 import { createApiClient } from "~/lib/api/api";
-import { createDemoProjectRequestService } from "~/routes/examples/form/project-request.service";
-import { createDemoNoteService } from "~/routes/examples/pacer/note.service";
-import { createTaskSearchService } from "~/routes/examples/pacer/task-search.service";
-import { createProjectsService } from "~/routes/examples/query/projects.service";
-import { createTasksService } from "~/routes/examples/table/tasks.service";
+import { createDemoProjectRequestService } from "~/routes/examples/form/lib/project-request.service";
+import { createDemoNoteService } from "~/routes/examples/pacer/lib/note.service";
+import { createTaskSearchService } from "~/routes/examples/pacer/lib/task-search.service";
+import { createProjectsService } from "~/routes/examples/query/lib/projects.service";
+import { createTasksService } from "~/routes/examples/table/lib/tasks.service";
 
 // The composition root. Every service is built once, here, in dependency order,
 // and exported as an instance; nothing else imports a factory. Swap an

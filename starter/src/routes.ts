@@ -14,7 +14,7 @@ import { exampleRoutes } from "./routes/examples/routes";
  * Learn more here: https://reactrouter.com/start/framework/routing#configuring-routes
  */
 export default [
-	index("./routes/home/home.route.tsx"),
+	index("./routes/home/home.route.ts"),
 	...exampleRoutes,
-	route("*", "./routes/not-found/not-found.route.tsx"),
+	route("*", "./routes/not-found/not-found.route.ts"),
 ] satisfies RouteConfig;

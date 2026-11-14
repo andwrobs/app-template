@@ -45,18 +45,18 @@ sequenceDiagram
 ## Services
 
 A service is a stateless factory that receives its dependencies when it's created and
-returns an object typed by an explicit interface. It holds I/O and domain decisions,
+returns an object typed by an explicit `XService` type. It holds I/O and domain decisions,
 never UI or client state.
 
 ```ts
-// tasks.service.ts
+// lib/tasks.service.ts
 import type { ApiClient } from "~/lib/api/api";
 import { type Task, taskSchema, tasksSchema } from "./tasks";
 
-export interface TasksService {
+export type TasksService = {
 	list(options?: { signal?: AbortSignal }): Promise<Task[]>;
 	complete(id: string): Promise<Task>;
-}
+};
 
 type Deps = { api: ApiClient };
 
@@ -81,19 +81,19 @@ export function createTasksService({ api }: Deps): TasksService {
 
 - **Factories, not classes.** Without `this`, methods pass safely as callbacks
   (`mutationFn: tasksService.complete`).
-- **An explicit interface for every service.** It's the contract, and the compiler
-  flags drift. Name the file `<thing>.service.ts`, the interface `XService`, and the
-  factory `createXService`. A stand-in for the same interface gets its own factory,
+- **An explicit type for every service.** It's the contract, and the compiler flags
+  drift. Name the file `<thing>.service.ts`, the type `XService`, and the factory
+  `createXService`. A stand-in for the same type gets its own factory,
   such as `createDemoXService`.
 - **One `Deps` object, destructured in the signature,** so every requirement shows at
   a glance.
-- **`Deps` lists interfaces, never factories or imported instances:**
+- **`Deps` lists types, never factories or imported instances:**
   `type Deps = { api: ApiClient; ledger: LedgerService }`.
 - **Services import no React, router, TanStack, Zustand, UI, routes, or service
   instances.** Anything they need arrives through `Deps`. Biome enforces this.
 - **Stateless, not pure.** I/O and side effects are fine; state kept between calls
   isn't.
-- **Fixed file anatomy:** the interface, `Deps`, and the factory, nothing else.
+- **Fixed file anatomy:** the `XService` type, `Deps`, and the factory, nothing else.
 - **Helpers live inside the factory,** above the public functions, and
   `return { ... }` at the bottom lists the public API.
 - **Extract only standalone logic.** Schemas, types, and pure transformations that are
@@ -111,7 +111,7 @@ their dependencies at creation; everything else imports the instances.
 import { createApiClient } from "~/lib/api/api";
 import { env } from "~/lib/env/env";
 import { createLedgerService } from "~/lib/ledger/ledger.service";
-import { createBillingService } from "~/routes/billing/billing.service";
+import { createBillingService } from "~/routes/billing/lib/billing.service";
 
 const api = createApiClient({ baseUrl: env.VITE_API_URL });
 
@@ -121,7 +121,7 @@ export const billingService = createBillingService({ api, ledger: ledgerService 
 
 - **One composition root.** Outside tests, it's the only module that imports a
   factory. Biome enforces this.
-- **Factories stay with their domain,** beside a route or in a `src/lib` capability;
+- **Factories stay with their domain,** in a route's `lib/` or a `src/lib` capability;
   only the instances live here.
 - **Build in dependency order.** A service that depends on another is created after
   it and receives the instance through `Deps`.
@@ -149,7 +149,7 @@ Every kind of state has one owner, and data never lives in two.
 
 - **Query functions call services:** `queryFn: ({ signal }) => tasksService.list({
   signal })`. Services know nothing about Query.
-- **Each domain's query options and keys live in its `<thing>.query.ts`.** Loaders
+- **Each domain's query options and keys live in its `<thing>.queries.ts`.** Loaders
   and components share the options. Add a key factory once there's more than one
   query or a mutation invalidates them.
 - **Mutations call services and invalidate keys.** Stores aren't updated with server
@@ -160,7 +160,7 @@ Every kind of state has one owner, and data never lives in two.
   State one component uses stays local.
 
 ```ts
-// tasks.query.ts
+// tasks.queries.ts
 import { queryOptions } from "@tanstack/react-query";
 import { tasksService } from "~/services";
 
@@ -176,7 +176,7 @@ export const tasksQuery = queryOptions({
 ```
 
 ```ts
-// useTaskActions.ts: the feature hook owns the mutation
+// lib/use-task-actions.ts: the feature hook owns the mutation
 export function useTaskActions() {
 	const queryClient = useQueryClient();
 	const complete = useMutation({
@@ -237,7 +237,7 @@ other. Coordination that spans stores lives in a hook.
 | Store A subscribes to store B | — | No: the hardest coupling to trace |
 
 ```ts
-// useStartRequest.ts
+// lib/use-start-request.ts
 export function useStartRequest() {
 	const reset = useRequestDraftStore((state) => state.reset);
 	const selectWorkspace = useWorkspaceStore((state) => state.select);
@@ -260,13 +260,13 @@ Components never import services, and they bind every handler by reference. Hand
 come from hooks that close over their arguments.
 
 ```tsx
-// useTaskActions.ts
+// lib/use-task-actions.ts
 export function useTaskActions(taskId: string) {
 	const exportCsv = useCallback(() => tasksService.exportCsv(taskId), [taskId]);
 	return { exportCsv };
 }
 
-// TaskToolbar.tsx
+// lib/task-toolbar.tsx
 const { exportCsv } = useTaskActions(taskId);
 return <Button onPress={exportCsv}>Download CSV</Button>;
 ```
@@ -325,15 +325,15 @@ allows them.
 
 | Layer | How to test | What to fake |
 | --- | --- | --- |
-| Services | Call the factory with fake `Deps`; assert on the returned interface | `ApiClient`, settings, and other services, typed as their interfaces |
+| Services | Call the factory with fake `Deps`; assert on the returned object | `ApiClient`, settings, and other services, typed as their types |
 | Query options | Through the route with `renderRoute` and a cleared `QueryClient` | `fetch`, or the service instance with `vi.spyOn` |
 | Stores | Call actions and assert on `getState()`; `reset()` in `beforeEach` | Service instances with `vi.spyOn` |
 | Action hooks | `renderHook`, call the returned handler, assert on the service call | The service instance with `vi.spyOn` |
 | Feature and coordinating hooks | Through the component that uses them, or `renderHook` | Services with `vi.spyOn`; reset stores |
 | Routes and components | Rendered behavior with `renderRoute`; handler logic is covered in its hook | `fetch`, or services with `vi.spyOn` |
 
-- **Test service helpers through the service's interface,** not by exporting them.
-- **Type fakes as the interface** (`const api: ApiClient = { ... }`), so contract drift
+- **Test service helpers through the service's type,** not by exporting them.
+- **Type fakes with the contract's type** (`const api: ApiClient = { ... }`), so contract drift
   fails to compile.
 
 ```ts
@@ -378,23 +378,22 @@ deciding it case by case.
 Check, in order: dependency direction, service imports in components, handlers that
 are inline or declared in a component, by-reference handlers with loose parameters, remote data
 in stores, decisions in store actions, store-to-store writes or subscriptions,
-factories used outside the composition root, and missing interfaces or `Deps` that
-aren't interfaces. Report
-each violation with its rule and a concrete fix.
+factories used outside the composition root, and missing `XService` types or `Deps`
+that hold factories or instances. Report each violation with its rule and a concrete fix.
 
 ## Examples
 
-- Services on a fixture client: `src/routes/examples/query/projects.service.ts` (with
-  its test), `table/tasks.service.ts`, and `pacer/task-search.service.ts`.
-- Stand-in implementations: `form/project-request.service.ts` and
-  `pacer/note.service.ts`.
-- Query options: `query/projects.query.ts`, `table/tasks.query.ts`.
+- Services on a fixture client: `src/routes/examples/query/lib/projects.service.ts`
+  (with its test), `table/lib/tasks.service.ts`, and `pacer/lib/task-search.service.ts`.
+- Stand-in implementations: `form/lib/project-request.service.ts` and
+  `pacer/lib/note.service.ts`.
+- Query options: `query/projects.queries.ts`, `table/tasks.queries.ts`.
 - A mutation calling a service:
-  `form/components/ProjectRequestForm/useProjectRequestForm.ts`.
-- Handlers from hooks, bound by reference: `table/components/TaskTable/useTaskTable.ts`,
-  `query/useProjects.ts` (`refresh` rather than `refetch`),
-  `pacer/components/ThrottledAutosave/useThrottledAutosave.ts`, and the catalog's
-  `components/components/useOverlayDemos.ts`, each with `renderHook` tests where the
+  `form/lib/project-request-form/use-project-request-form.ts`.
+- Handlers from hooks, bound by reference: `table/lib/task-table/use-task-table.ts`,
+  `query/lib/use-projects.ts` (`refresh` rather than `refetch`),
+  `pacer/lib/throttled-autosave/use-throttled-autosave.ts`, and the catalog's
+  `components/lib/use-overlay-demos.ts`, each with `renderHook` tests where the
   route tests don't fire every handler.
 - Tests that swap a fake server with `vi.spyOn`: `form/form.route.test.tsx` and
   `pacer/pacer.route.test.tsx`.

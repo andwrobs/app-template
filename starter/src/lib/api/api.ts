@@ -82,10 +82,10 @@ export async function fetchJson<T>(
 	return parsed.data;
 }
 
-export interface ApiClient {
+export type ApiClient = {
 	/** Fetches `path` from the client's base URL and parses it with `schema`. */
 	request<T>(path: string, schema: z.ZodType<T>, init?: JsonInit): Promise<T>;
-}
+};
 
 type Deps = { baseUrl: string };
 

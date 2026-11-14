@@ -13,9 +13,8 @@ src/
     ui/                     # Design system, one module per component
       button.tsx            # A file...
       date-picker/          # ...or a folder once it has siblings
-        date-picker.tsx
+        date-picker.tsx     # Imported as ~/lib/ui/date-picker/date-picker
         date-picker.test.tsx
-        index.ts            # Keeps the import path ~/lib/ui/date-picker
       utils.ts              # cn
     app/                    # Providers, layouts, header, route focus, skip link
     query/client.ts         # QueryClient shared by loaders and React
@@ -27,38 +26,44 @@ src/
     url-state/              # URL-backed input drafts
   routes/
     projects/
-      components/           # Route-private component modules
-        FilterBar/
-          FilterBar.tsx     # Thin connected entry point
-          FilterBarView.tsx # Renders props and emits intent
-          useFilterBar.ts   # Private behavior owner
-          FilterBar.test.tsx
-          index.ts
-      lib/                  # Non-view code shared within the route
+      projects.route.ts     # meta, clientLoader, export default ProjectsPage
+      projects.page.tsx     # The screen
+      projects.route.test.tsx
+      results.queries.ts    # Query options calling resultsService
+      lib/                  # Everything else the route owns
         results.ts          # Schema and types
         results.service.ts  # ResultsService and createResultsService
         results.service.test.ts
-        results.query.ts    # Query options calling resultsService
-      projects.route.tsx    # Registered in src/routes.ts
-      projects.route.test.tsx
+        filter-bar/
+          filter-bar.tsx    # Thin connected entry point
+          filter-bar-view.tsx # Renders props and emits intent
+          use-filter-bar.ts # Private behavior owner
+          filter-bar.test.tsx
 ```
+
+A route folder is its role files plus one `lib/`. `.route.ts`, `.page.tsx`,
+`.layout.tsx`, `.provider.tsx`, `.queries.ts`, `.mutations.ts`, `.store.ts`,
+`.search.ts` and their tests sit at the route root. Everything else the route owns
+(components, hooks, services, schemas, slices, pure functions) goes in `lib/`, flat
+until a component or capability has several files, then in a kebab-case folder:
+`lib/filter-bar/`. File names are kebab-case, exports are named, types use `type`,
+and there are no `index.ts` barrels; import from the file.
 
 ## Placement
 
 | Code | Goes in |
 | --- | --- |
-| Used by one component | That component's folder |
-| Coordinates a route, or used by several of its components | The route root or its `lib/` |
+| Used by one component | That component's folder in the route's `lib/` |
+| A route role (`.route.ts`, `.page.tsx`, `.queries.ts`, ...) | The route root |
+| Anything else one route owns | The route's `lib/` |
 | Used across routes | A named capability in `src/lib` |
 | Visual primitive or pattern with no app knowledge | `lib/ui` |
 | Wraps every route (providers, layout, navigation) | `lib/app` |
 | Binds Form, Table, Query, or the router to UI, shared across routes | A capability such as `lib/form`, never `lib/ui` |
 | A service instance | `src/services.ts`; the factory stays with its domain ([services and state](services-and-state.md)) |
 
-Tests sit next to the code they test. Keep a route's `lib/` flat until some files form
-a subsystem, then group them by concept (`lib/results/query.ts`), not by type. No
-`queries`, `stores`, `types`, `utils`, `hooks`, or `components` folders inside any
-`lib`. A route's `components/` folder is the only components folder.
+Tests sit next to the code they test. Folders in `lib/` are named by concept, never
+by type: no `components`, `queries`, `stores`, `types`, `utils`, or `hooks` folders.
 
 ## Behavior ownership
 
@@ -67,9 +72,9 @@ and public interface should tell a reader what it owns. Keep related state,
 transitions, and effects together behind a small interface; extraction is useful
 when it creates that boundary, not merely when it shortens a file.
 
-- **Route modules** own framework exports (`meta`, loaders, actions, boundaries)
-  and page composition. Their rendering functions don't implement feature workflows
-  or assemble a collection of private component hooks. Loaders and actions delegate
+- **Route modules** (`.route.ts`) own framework exports (`meta`, loaders, actions,
+  boundaries). **Pages** (`.page.tsx`) compose the screen; they don't implement
+  feature workflows or assemble a collection of private component hooks. Loaders and actions delegate
   domain work to the owning module.
 - **Views** render state and emit intent. Formatting and conditional rendering
   belong here. Handlers, including ones that read an event, submission sequences,
@@ -100,22 +105,19 @@ A self-contained feature exposes its connected entry point. Its hook and view st
 private unless another consumer has a concrete need for them:
 
 ```tsx
-// FilterBarView.tsx
+// lib/filter-bar/filter-bar-view.tsx
 export function FilterBarView(props: FilterBarProps) { /* render from props */ }
 
-// useFilterBar.ts: integrates queries, stores, and route state
+// lib/filter-bar/use-filter-bar.ts: integrates queries, stores, and route state
 export function useFilterBar(): FilterBarProps { /* ... */ }
 
-// FilterBar.tsx: the only place that wires this feature
+// lib/filter-bar/filter-bar.tsx: the only place that wires this feature
 export function FilterBar() {
   const props = useFilterBar();
   return <FilterBarView {...props} />;
 }
 
-// index.ts: public entry point
-export { FilterBar } from "./FilterBar";
-
-// projects.route.tsx: composition
+// projects.page.tsx: composition
 return <FilterBar />;
 ```
 
@@ -149,7 +151,7 @@ TanStack, Zustand, other `~/lib` code, or routes (Biome enforces this).
 `SidebarLayout` instead; both read the links in `lib/app/nav.ts`.
 
 Aria `Link` and `LinkButton` navigate client-side through the `RouterProvider` in
-`lib/app/AppProviders.tsx`, the only place the design system meets the router. Routes
+`lib/app/app-providers.tsx`, the only place the design system meets the router. Routes
 don't import `lib/app`. Extract anything a route needs from it into its own capability.
 
 Presentational parts such as `field.tsx` and `table.tsx` go in `lib/ui`. Bindings such
@@ -161,8 +163,9 @@ routes/*  ──►  lib/<capability>  ──►  lib/ui
 root.tsx  ──►  lib/app           ──►  lib/query, lib/ui
 ```
 
-`src/lib` never imports `src/routes` (Biome enforces this), and routes never import
-each other's private code.
+`src/lib` never imports `src/routes`, and no file outside a route imports its `lib/`
+or role files (Biome enforces both). `src/routes.ts` names route modules by path and
+`src/services.ts` builds route services.
 
 Because `lib/ui` has no app imports, it can become a workspace package later without a
 rewrite. Do that when it has its own API or owner, or a second app uses it.
@@ -175,10 +178,10 @@ this doc together.
 
 - Refresh components by generating them in a scratch copy and diffing against
   `lib/ui`. Keep local changes, and never overwrite in bulk.
-- Registry files keep upstream lowercase names. A component can become a folder with
-  an `index.ts` re-export. The CLI doesn't know about folders: adding a component that
-  depends on `button/` writes a new `button.tsx` that shadows it. Delete that file.
-- A per-component `index.ts` is fine. A catalog-wide `lib/ui/index.ts` barrel isn't.
+- Registry files keep upstream kebab-case names. A component can become a folder,
+  imported by file (`~/lib/ui/date-picker/date-picker`). The CLI doesn't know about
+  folders: adding a component that depends on `button/` writes a new `button.tsx`
+  that shadows it. Delete that file and fix its imports.
 - Blocks (`registry:block`) land in `lib/ui` too. Move route links, data loading, and
   app state into `lib/app` or the owning route. Lint flags them.
 
@@ -188,4 +191,4 @@ Examples live in `src/routes/examples/<name>/`, with fixtures in `public/demo`. 
 `src/routes.ts` and `src/services.ts` import them. To remove them, delete both
 folders, the `exampleRoutes` lines in `src/routes.ts`, the example lines in
 `src/services.ts`, and the `/examples/` links in `lib/app/nav.ts` and
-`routes/home/home.route.tsx`.
+`routes/home/home.page.tsx`.

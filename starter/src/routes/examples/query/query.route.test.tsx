@@ -4,8 +4,8 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { queryClient } from "~/lib/query/client";
 import type { Route } from "./+types/query.route";
-import { projectsQuery } from "./projects.query";
-import QueryRoute, { clientLoader, meta } from "./query.route";
+import { projectsQuery } from "./projects.queries";
+import QueryPage, { clientLoader, meta } from "./query.route";
 
 const projects = [
 	{ id: "studio", name: "Sample design studio", status: "Active" },
@@ -34,7 +34,7 @@ it("shares a fresh loader cache with the screen and a return navigation", async 
 	const router = createMemoryRouter([
 		{
 			path: "/",
-			element: <QueryRoute {...({ loaderData } as Route.ComponentProps)} />,
+			element: <QueryPage {...({ loaderData } as Route.ComponentProps)} />,
 		},
 	]);
 	render(

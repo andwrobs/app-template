@@ -3,7 +3,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { queryClient } from "~/lib/query/client";
 import tasks from "../../../../public/demo/tasks.json";
 import { renderRoute } from "../../../../test-utils/render-route";
-import TableRoute, {
+import TablePage, {
 	clientLoader,
 	ErrorBoundary,
 	meta,
@@ -28,7 +28,7 @@ function renderTable(url = "/examples/table") {
 		[
 			{
 				path: "/examples/table",
-				Component: TableRoute,
+				Component: TablePage,
 				ErrorBoundary,
 				loader: clientLoader,
 				meta,

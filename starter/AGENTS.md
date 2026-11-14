@@ -24,14 +24,18 @@ a page and `react-router` for other route work.
   [data and forms](docs/data-and-forms.md).
 - Dependencies point one way: components → feature hooks, stores, and query options
   → services → clients (`lib/api`). A service is a stateless `createXService(deps)`
-  factory typed by an `XService` interface. `src/services.ts`, the composition root,
+  factory typed by an `XService` type. `src/services.ts`, the composition root,
   builds each one once; everything else imports the instances. Components never
   import services and bind handlers from hooks by reference, never inline (Biome
   enforces both). See [services and state](docs/services-and-state.md).
-- Route-private code and tests stay beside the route. Shared code goes in a named
-  `src/lib` capability. Routes never import each other's private code.
+- A route folder is its role files (`.route.ts`, `.page.tsx`, `.queries.ts`, and the
+  rest) plus one `lib/` for everything else it owns. `.route.ts` holds `meta` and
+  `clientLoader` and ends with `export default XPage`. Shared code goes in a named
+  `src/lib` capability. Outside a route, only `src/services.ts` imports its files, to
+  build its services (Biome enforces this). kebab-case file names, named exports, `type` not `interface`, no `index.ts`
+  barrels. See [code organization](docs/code-organization.md).
 - Prefer strong encapsulation: a reader should see what a module owns from its
-  name and public interface. Route components compose features; views render state
+  name and public interface. Pages compose features; views render state
   and emit intent. Keep workflow transitions, request coordination, timing, and
   side effects in a named feature owner, not JSX handlers or a collection of hooks
   assembled by the route. A thin connected component may bind a private hook to a

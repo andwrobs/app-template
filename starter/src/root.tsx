@@ -7,9 +7,9 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from "react-router";
-import { AppLayout } from "~/lib/app/AppLayout";
-import { AppProviders } from "~/lib/app/AppProviders";
-import { useReloadPage } from "~/lib/app/useReloadPage";
+import { AppLayout } from "~/lib/app/app-layout";
+import { AppProviders } from "~/lib/app/app-providers";
+import { useReloadPage } from "~/lib/app/use-reload-page";
 import { pageTitle } from "~/lib/meta/title";
 import { themeScript } from "~/lib/theme/theme";
 import { Button, LinkButton } from "~/lib/ui/button";
