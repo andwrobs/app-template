@@ -1,0 +1,7 @@
+node_modules/
+.react-router/
+build/
+coverage/
+*.tsbuildinfo
+__pycache__/
+.DS_Store
