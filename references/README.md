@@ -8,7 +8,7 @@
 - [Widget builder pattern](widget-builder-pattern/README.md) — widget and dashboard
   design and implementation guidance.
 
-The starter in `../examples/react-router-spa` uses Framework Mode. For routing
+The starter in `../starter` uses Framework Mode. For routing
 patterns from the app reference, use its
 [Framework guide](app-reference/docs/framework-routing.md) and `framework/`
 example. The top-level `app-reference/src/` demonstrates Data Mode and should not
