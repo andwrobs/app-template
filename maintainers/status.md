@@ -1,11 +1,42 @@
 # Status
 
-Updated 2026-09-29. `main` includes the app foundations, the encapsulation audit,
+Updated 2026-11-14. The `reorg` branch (unmerged, unpushed) moves the starter to
+`starter/`; see Repository reorg. Before it: `main` includes the app foundations, the encapsulation audit,
 ARCH-01/02/03, the service layering, the services and state docs, and the components
 and handlers rules. `origin` (`andwrobs/app-template`, private) has everything up to
 the services and state docs; the handler rules commit isn't pushed, and neither are
 the `v0.1.0` tag or other branches. The latest release tag is `v0.1.0`; these changes
 are unreleased.
+
+## Repository reorg — 2026-11-14
+
+Branch `reorg`, one commit per phase. The starter moved from `examples/react-router-spa`
+to `starter/`; skills, `.codex`, and `.github` returned to their owners; `maintainers/`
+and the loose notes moved up; `state-reference` was deleted; root CI and Dependabot
+cover `starter/` and `references/app-reference/`. app-reference moved route
+capabilities under `lib/` and gained a lockfile. The starter split every route into
+`.route.ts` + `.page.tsx` with route-private code under `lib/`, kebab-cased
+`lib/app` and `lib/url-state`, renamed `.query.ts` to `.queries.ts`, removed barrels,
+and replaced service interfaces with types. Biome now enforces kebab-case file names,
+named exports, `type` definitions, and no imports of a route's files from outside it.
+
+Run with Node 23.7.0; npm 10.9.2 in `starter/`, npm 11.19.0 (`npx npm@11.19.0`) in
+app-reference, where npm 10 crashes in arborist.
+
+| Check | Result |
+| --- | --- |
+| `starter/`: `npm ci && npm test` | Biome clean, typecheck clean, 70 tests in 25 files, SPA build |
+| CLI tests (`npx vitest run bin/`) | 3 pass |
+| `maintainers/` tests from `starter/` | 5 pass |
+| Generated app, full / `--no-examples` | 67 tests in 24 files / 27 tests in 13 files; both build |
+| "Keep apps clean" grep | Empty |
+| app-reference: `npm ci && npm run check` | 65 snippets in sync, 8 tests in 4 files, Framework build |
+| Rendered, dev server | `/` and all five examples render their `h1` and title; `/examples/query?scenario=error` shows the boundary; `/no/such` shows not-found; no console errors after Vite's first dependency optimization |
+| Relative links in every `AGENTS.md`, `SKILL.md`, `README.md` | 0 broken |
+
+Open: `src/services.ts` imports route `lib/` services, so Biome leaves the
+composition root out of the cross-route rule. `npm ci` in `starter/` lets lefthook
+write an example `lefthook.yml` at the repository root; delete it.
 
 ## Verified state
 
