@@ -41,8 +41,7 @@ npm run check
 npm run archive
 ```
 
-`archive` writes `../app-reference.zip`, with the same root layout as this
-directory. It checks source snippets and excludes dependencies, generated types,
-build output, caches, symlinks, and operating-system metadata. Extract it into an
-empty directory. The reference is also stored unpacked alongside the ZIP in the
-template repository so its changes can be reviewed.
+`archive` writes `../app-reference.zip`, which is gitignored, with the same root
+layout as this directory. It checks source snippets and excludes dependencies,
+generated types, build output, caches, symlinks, and operating-system metadata.
+Extract it into an empty directory.
